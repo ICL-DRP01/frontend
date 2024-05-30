@@ -7,8 +7,8 @@ const SEATS_PER_ROW = 6;
 const COMPUTER_SEATS = [0, 5, 6, 11, 12, 17, 18, 23, 24, 29]; // Position indices of computer seats
 
 const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
-const CLAIM_API = "http://libraryseat-62c310e5e91e.herokuapp.com/claim";
-const LEAVE_API = "http://libraryseat-62c310e5e91e.herokuapp.com/leave"
+const CLAIM_API = "https://libraryseat-62c310e5e91e.herokuapp.com/claim";
+const LEAVE_API = "https://libraryseat-62c310e5e91e.herokuapp.com/leave"
 
 const Reserve = () => {
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
