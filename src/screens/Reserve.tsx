@@ -50,7 +50,7 @@ const Reserve = () => {
           { text: "Cancel", style: "cancel" }
         ]
       );
-    } else if (timedWaitSeats.includes(index)) {
+    } else if ((timedWaitSeats.includes(index) || occupiedSeats.includes(index)) && selectedSeat !== index)  {
       Alert.alert("Options",
         "Do you want to flag this seat?",
         [
@@ -59,7 +59,7 @@ const Reserve = () => {
         ]
       );
     }
-    else if (occupiedSeats.includes(index)) {
+    else if (selectedSeat === index) {
       Alert.alert("Options",
         "Do you want to take break or leave",
         [
@@ -174,9 +174,11 @@ const Reserve = () => {
     const seatType = COMPUTER_SEATS.includes(index) ? 'computer' : 'regular';
     const occupied = occupiedSeats.includes(index);
     const isInTimedWait = timedWaitSeats.includes(index);
-    const isDisabled = (selectedSeat !== null && selectedSeat !== index && !timedWaitSeats.includes(index))
-                        || (occupied && selectedSeat !== index);
+
+    const isDisabled = (selectedSeat !== null && selectedSeat !== index && !timedWaitSeats.includes(index) && !occupiedSeats.includes(index))
+
     const isFlagged = flaggedSeats.includes(index);
+    const isSelected = selectedSeat === index;
 
     return (
       <TouchableOpacity
@@ -186,12 +188,13 @@ const Reserve = () => {
           occupied && styles.occupied,
           isInTimedWait && styles.timedWaitSeat,
           isDisabled && styles.disabledSeat,
+          isSelected && styles.selectedSeat,
         ]}
         onPress={() => !isDisabled && handlePress(index)}
                 disabled={isDisabled}
       >
         {isFlagged && (
-          <MaterialIcons name="flag" size={20} color="red" style={styles.flagIcon} />
+          <MaterialIcons name="flag" size={20} color="black" style={styles.flagIcon} />
         )}
         {seatType === 'computer' ? (
           <>
@@ -262,6 +265,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  selectedSeat: {
+    borderWidth: 5,
+    borderColor: 'black', // Adjust the color of the border as needed
+  }
 });
 
 export default Reserve;
