@@ -107,6 +107,12 @@ const Reserve = () => {
   }
 
   const claimSeat = async (index: number) => {
+    if (occupiedSeats.includes(index)) {
+      setTimedWaitSeats(timedWaitSeats.filter(seat => seat !== index));
+      setSelectedSeat(index); // Select the seat
+      Alert.alert('Success', 'Seat claimed successfully.');
+      return;
+    }
     try {
       const response = await fetch(CLAIM_API, {
         method: 'POST',
@@ -211,7 +217,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
   },
   computerSeat: {
-    backgroundColor: '#1ECEC8', // Color for computer seats
+    backgroundColor: '#1AB502', // Color for computer seats
   },
   occupied: {
     backgroundColor: '#F5513F', // Color for occupied
