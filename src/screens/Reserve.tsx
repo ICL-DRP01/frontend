@@ -1,57 +1,133 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useState , useEffect} from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const NUM_ROWS = 5;
 const SEATS_PER_ROW = 6;
-const OCCUPIED = [2, 7, 14, 20, 29]; // Initial occupied seats - get this from db
 const COMPUTER_SEATS = [0, 5, 6, 11, 12, 17, 18, 23, 24, 29]; // Position indices of computer seats
 
+const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
+const CLAIM_API = "http://libraryseat-62c310e5e91e.herokuapp.com/claim";
+const LEAVE_API = "http://libraryseat-62c310e5e91e.herokuapp.com/leave"
+
 const Reserve = () => {
-  const [occupiedSeats, setOccupiedSeats] = useState<number[]>(OCCUPIED); // Track occupied seats
+  const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
   const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>([]); // Track seats in timed wait state
+
+  // API call to fetch occupiedSeats
+  useEffect(() => {
+    const fetchOccupiedSeats = async () => {
+      try {
+        const response = await fetch(OCCUPIED_API);
+        if (!response.ok) {
+          throw new Error('Failed to fetch occupied seats');
+        }
+        const data = await response.json(); // what we get form the API
+        const occupied = data.results.map(item => parseInt(item.seat_number));
+        console.log(data);
+        setOccupiedSeats(occupied);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchOccupiedSeats();
+  }, []);
 
   const handlePress = (index: number) => {
     if (timedWaitSeats.includes(index)) {
       Alert.alert("Options",
         "Do you want to take get back or leave?",
         [
-          {text: "claim", onPress: () => claimSeat(index)},
+          {text: "get back", onPress: () => claimSeat(index)},
           {text: "leave", onPress: () => leaveSeat(index)},
           { text: "Cancel", style: "cancel" }
-          ]
-        );
+        ]
+      );
     }
     else if (occupiedSeats.includes(index)) {
       Alert.alert("Options",
-      "Do you want to take break or leave",
-      [
-        {text: "break", onPress: () => breakSeat(index)},
-        {text: "leave", onPress: () => leaveSeat(index)},
-        { text: "Cancel", style: "cancel" }
+        "Do you want to take break or leave",
+        [
+          {text: "break", onPress: () => breakSeat(index)},
+          {text: "leave", onPress: () => leaveSeat(index)},
+          { text: "Cancel", style: "cancel" }
         ]
       );
     } else {
       Alert.alert(
-          "Options",
-          "Do you want to claim this seat?",
-          [
-            { text: "Claim", onPress: () => claimSeat(index) },
-            { text: "Cancel", style: "cancel" }
-          ]
-        );
+        "Options",
+        "Do you want to claim this seat?",
+        [
+          { text: "Claim", onPress: () => claimSeat(index) },
+          { text: "Cancel", style: "cancel" }
+        ]
+      );
     }
   };
 
-  const leaveSeat = (index: number) => {
+  const leaveSeat = async (index: number) => {
+    // in the future - this will be API call as well
     if (timedWaitSeats.includes(index))
       setTimedWaitSeats(timedWaitSeats.filter(seat => seat !== index));
-    if (occupiedSeats.includes(index))
-      setOccupiedSeats(occupiedSeats.filter(seat => seat !== index));
+
+//     if (occupiedSeats.includes(index))
+//       setOccupiedSeats(occupiedSeats.filter(seat => seat !== index));
+
+    if (occupiedSeats.includes(index)) {
+      try {
+        const response = await fetch(LEAVE_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ seat_number: index.toString() }),
+        });
+        if (response.ok) {
+          // Fetch updated list of occupied seats
+          const updatedResponse = await fetch(OCCUPIED_API);
+          if (!updatedResponse.ok) {
+            throw new Error('Failed to fetch updated occupied seats');
+          }
+          const data = await updatedResponse.json();
+          const updated= data.results.map(item => parseInt(item.seat_number));
+          setOccupiedSeats(updated);
+          Alert.alert('Success', 'Seat left successfully.');
+        } else {
+          Alert.alert('Error', 'Failed to leave seat.');
+        }
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'An error occurred while claiming the seat.');
+      }
+    }
   }
 
-  const claimSeat = (index: number) => {
-    setOccupiedSeats([...occupiedSeats, index]);
+  const claimSeat = async (index: number) => {
+    try {
+      const response = await fetch(CLAIM_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ seat_number: index.toString() }),
+      });
+      if (response.ok) {
+        // Fetch updated list of occupied seats
+        const updatedResponse = await fetch(OCCUPIED_API);
+        if (!updatedResponse.ok) {
+          throw new Error('Failed to fetch updated occupied seats');
+        }
+        const data = await updatedResponse.json();
+        const updated= data.results.map(item => parseInt(item.seat_number));
+        setOccupiedSeats(updated);
+        Alert.alert('Success', 'Seat claimed successfully.');
+      } else {
+        Alert.alert('Error', 'Failed to claim seat.');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'An error occurred while claiming the seat.');
+    }
   };
 
   const breakSeat = (index: number) => {
@@ -76,10 +152,10 @@ const Reserve = () => {
         {seatType === 'computer' ? (
           <>
             <Ionicons name="laptop-outline" size={24} color="white" />
-            <Text style={styles.seatText}>{index + 1}</Text>
+            <Text style={styles.seatText}>{index}</Text>
           </>
         ) : (
-          <Text style={styles.seatText}>{index + 1}</Text>
+          <Text style={styles.seatText}>{index}</Text>
         )}
       </TouchableOpacity>
     );
