@@ -211,6 +211,9 @@ const Reserve = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reserve Your Seat</Text>
+      <Text style={styles.selectedSeatText}>
+        {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
+      </Text>
       <View style={styles.seatsContainer}>
         <FlatList
           data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
@@ -218,7 +221,8 @@ const Reserve = () => {
           keyExtractor={(item, index) => index.toString()}
           numColumns={SEATS_PER_ROW}
         />
-      </View>
+       </View>
+
     </View>
   );
 };
@@ -228,13 +232,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 100, // Adjust the top padding here
+    paddingTop: 100, // Adjust the top padding here
     paddingHorizontal: 45,
   },
   title: {
-    fontSize: 30,
+    fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 40,
+    marginTop: 10,
+    marginBottom: 20,
   },
   seatsContainer: {
     alignItems: 'center',
@@ -268,7 +273,13 @@ const styles = StyleSheet.create({
   selectedSeat: {
     borderWidth: 5,
     borderColor: 'black', // Adjust the color of the border as needed
-  }
+  },
+  selectedSeatText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    margin : 20,
+  },
+
 });
 
 export default Reserve;
