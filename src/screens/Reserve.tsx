@@ -1,11 +1,12 @@
 import React, { useState , useEffect} from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
 
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
-const COMPUTER_SEATS = [0,1,2,3,4]; // Position indices of computer seats
+const COMPUTER_SEATS = [0,1,2,3,4]; // positions of computer seats
+const BREAK_SEATS = [0, 9, 29]
 
 const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
 const CLAIM_API = "https://libraryseat-62c310e5e91e.herokuapp.com/claim";
@@ -13,9 +14,12 @@ const LEAVE_API = "https://libraryseat-62c310e5e91e.herokuapp.com/leave"
 
 const Reserve = () => {
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
-  const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>([]); // Track seats in timed wait state
+  // the seats that are on break
+  const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>(BREAK_SEATS); // Track seats in timed wait state
   // temp solution before ownership is added to db
   const [selectedSeat, setSelectedSeat] = useState<number | null>(null) // currently selected seat
+  // flagged seats
+  const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
 
   // API call to fetch occupiedSeats
   useEffect(() => {
@@ -37,12 +41,20 @@ const Reserve = () => {
   }, []);
 
   const handlePress = (index: number) => {
-    if (timedWaitSeats.includes(index)) {
+    if (timedWaitSeats.includes(index) && index === selectedSeat) {
       Alert.alert("Options",
         "Do you want to take get back or leave?",
         [
           {text: "get back", onPress: () => claimSeat(index)},
           {text: "leave", onPress: () => leaveSeat(index)},
+          { text: "Cancel", style: "cancel" }
+        ]
+      );
+    } else if (timedWaitSeats.includes(index)) {
+      Alert.alert("Options",
+        "Do you want to flag this seat?",
+        [
+          {text: "flag", onPress: () => flagSeat(index)},
           { text: "Cancel", style: "cancel" }
         ]
       );
@@ -145,11 +157,26 @@ const Reserve = () => {
     setTimedWaitSeats([...timedWaitSeats, index]);
   };
 
+  const flagSeat = (index: number) => {
+    // You can implement the logic to add a flag to the seat button here
+    // For simplicity, let's assume there's a state to keep track of flagged seats
+    if (!flaggedSeats.includes(index))
+      setFlaggedSeats([...flaggedSeats, index]);
+
+    console.log(flaggedSeats);
+
+    // implement notification
+    // show alert to the flagging user for now
+    Alert.alert('Notification Sent', 'Notification to the owner has been sent.');
+  };
+
   const renderSeat = ({ index }) => {
     const seatType = COMPUTER_SEATS.includes(index) ? 'computer' : 'regular';
     const occupied = occupiedSeats.includes(index);
     const isInTimedWait = timedWaitSeats.includes(index);
-    const isDisabled = (selectedSeat !== null && selectedSeat !== index) || (occupied && selectedSeat !== index);
+    const isDisabled = (selectedSeat !== null && selectedSeat !== index && !timedWaitSeats.includes(index))
+                        || (occupied && selectedSeat !== index);
+    const isFlagged = flaggedSeats.includes(index);
 
     return (
       <TouchableOpacity
@@ -163,6 +190,9 @@ const Reserve = () => {
         onPress={() => !isDisabled && handlePress(index)}
                 disabled={isDisabled}
       >
+        {isFlagged && (
+          <MaterialIcons name="flag" size={20} color="red" style={styles.flagIcon} />
+        )}
         {seatType === 'computer' ? (
           <>
             <Ionicons name="laptop-outline" size={24} color="white" />
