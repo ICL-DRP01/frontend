@@ -1,6 +1,7 @@
 import React, { useState , useEffect} from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
+import { scale } from 'react-native-size-matters';
 
 
 const NUM_ROWS = 6;
@@ -246,8 +247,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   seat: {
-    width: 40,
-    height: 40,
+    width: scale(40),
+    height: scale(40),
     margin: 5,
     alignItems: 'center',
     justifyContent: 'center',
