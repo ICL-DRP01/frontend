@@ -1,17 +1,19 @@
 import React, { useState , useEffect} from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
-import { scale } from 'react-native-size-matters';
+import { scale,  moderateScale } from 'react-native-size-matters';
 
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
 const COMPUTER_SEATS = [0,1,2,3,4]; // positions of computer seats
-const BREAK_SEATS = [0, 9, 29]
+const BREAK_SEATS = [0, 9, 29];
+const DURATION = 1000; // minutes for now
 
 const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
 const CLAIM_API = "https://libraryseat-62c310e5e91e.herokuapp.com/claim";
 const LEAVE_API = "https://libraryseat-62c310e5e91e.herokuapp.com/leave"
+const CLEAR_API = "https://libraryseat-62c310e5e91e.herokuapp.com/clear" // debugging
 
 const Reserve = () => {
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
@@ -21,6 +23,9 @@ const Reserve = () => {
   const [selectedSeat, setSelectedSeat] = useState<number | null>(null) // currently selected seat
   // flagged seats
   const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
+
+  // timer
+  const [timer, setTimer] = useState<{ [key: number]: number }>({}); // Timer state for seats
 
   // API call to fetch occupiedSeats
   useEffect(() => {
@@ -40,6 +45,34 @@ const Reserve = () => {
     };
     fetchOccupiedSeats();
   }, []);
+
+  // timer implementation
+  useEffect(() => {
+    if (selectedSeat === null) return;
+    const interval = setInterval(() => {
+      setTimer(prevTimers => {
+        const newTimers = { ...prevTimers };
+        if (newTimers[selectedSeat] > 0) {
+          newTimers[selectedSeat] -= 1;
+        }
+        return newTimers;
+      });
+    }, DURATION);
+
+    return () => clearInterval(interval);
+  }, [selectedSeat, timer]);
+
+
+  const Timer = ({ remainingTime }: { remainingTime: number }) => {
+    const minutes = Math.floor(remainingTime / 60);
+    const seconds = remainingTime % 60;
+    return (
+      <Text style={styles.timerText}> Time Left :  {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+      </Text>
+    );
+  };
+
+
 
   const handlePress = (index: number) => {
     if (timedWaitSeats.includes(index) && index === selectedSeat) {
@@ -156,6 +189,7 @@ const Reserve = () => {
 
   const breakSeat = (index: number) => {
     setTimedWaitSeats([...timedWaitSeats, index]);
+    setTimer({ ...timer, [index]: 120 }); // 2 minutes = 120 seconds
   };
 
   const flagSeat = (index: number) => {
@@ -181,6 +215,7 @@ const Reserve = () => {
     const isFlagged = flaggedSeats.includes(index);
     const isSelected = selectedSeat === index;
 
+
     return (
       <TouchableOpacity
         style={[
@@ -200,7 +235,7 @@ const Reserve = () => {
         {seatType === 'computer' ? (
           <>
             <Ionicons name="laptop-outline" size={24} color="white" />
-            <Text style={styles.seatText}>{index}</Text>
+            <Text style={styles.seatText}> {index}</Text>
           </>
         ) : (
           <Text style={styles.seatText}>{index}</Text>
@@ -215,6 +250,9 @@ const Reserve = () => {
       <Text style={styles.selectedSeatText}>
         {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
       </Text>
+       {selectedSeat !== null && timedWaitSeats.includes(selectedSeat) && (
+          <Timer remainingTime={timer[selectedSeat]} />
+       )}
       <View style={styles.seatsContainer}>
         <FlatList
           data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
@@ -222,8 +260,7 @@ const Reserve = () => {
           keyExtractor={(item, index) => index.toString()}
           numColumns={SEATS_PER_ROW}
         />
-       </View>
-
+      </View>
     </View>
   );
 };
@@ -233,11 +270,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 100, // Adjust the top padding here
+    paddingTop: 100,
     paddingHorizontal: 45,
   },
   title: {
-    fontSize: 30,
+    fontSize: moderateScale(30),
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 20,
@@ -276,10 +313,17 @@ const styles = StyleSheet.create({
     borderColor: 'black', // Adjust the color of the border as needed
   },
   selectedSeatText: {
-    fontSize: 25,
+    fontSize: moderateScale(25),
     fontWeight: 'bold',
     margin : 20,
   },
+  timerText: {
+    color: 'black',
+    fontSize: moderateScale(20),
+    marginTop: 4,
+    marginBottom: 10,
+  },
+
 
 });
 
