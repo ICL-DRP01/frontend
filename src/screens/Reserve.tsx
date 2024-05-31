@@ -246,7 +246,7 @@ const Reserve = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reserve Your Seat</Text>
+      <Text style={styles.title}>Reserve Your Seat!!!!! </Text>
       <Text style={styles.selectedSeatText}>
         {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
       </Text>
