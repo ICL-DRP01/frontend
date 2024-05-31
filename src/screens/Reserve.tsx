@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 45,
   },
   title: {
-    fontSize: 40,
+    fontSize: 30,
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 20,
@@ -246,8 +246,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   seat: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     margin: 5,
     alignItems: 'center',
     justifyContent: 'center',
