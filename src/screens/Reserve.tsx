@@ -2,21 +2,18 @@ import React, { useState , useEffect} from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
 
+
 import styles from './Styles'
 import Seat from './Seat'
 import Timer from './Timer'
+import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
+const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/"; // duplicated - maybe constants file
 
 const BREAK_SEATS = [0, 9, 29];
 const DURATION = 1000; // minutes for now
-
-const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
-const CLAIM_API = "https://libraryseat-62c310e5e91e.herokuapp.com/claim";
-const LEAVE_API = "https://libraryseat-62c310e5e91e.herokuapp.com/leave"
-const CLEAR_API = "https://libraryseat-62c310e5e91e.herokuapp.com/clear" // debugging
-
 
 const Reserve = () => {
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
@@ -70,8 +67,8 @@ const Reserve = () => {
       Alert.alert("Options",
         "Do you want to take get back or leave?",
         [
-          {text: "get back", onPress: () => claimSeat(index)},
-          {text: "leave", onPress: () => leaveSeat(index)},
+          {text: "get back", onPress: () => claimSeat(index, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+          {text: "leave", onPress: () => leaveSeat(index, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)},
           { text: "Cancel", style: "cancel" }
         ]
       );
@@ -79,7 +76,7 @@ const Reserve = () => {
       Alert.alert("Options",
         "Do you want to flag this seat?",
         [
-          {text: "flag", onPress: () => flagSeat(index)},
+          {text: "flag", onPress: () => flagSeat(index, flaggedSeats, setFlaggedSeats)},
           { text: "Cancel", style: "cancel" }
         ]
       );
@@ -88,8 +85,8 @@ const Reserve = () => {
       Alert.alert("Options",
         "Do you want to take break or leave",
         [
-          {text: "break", onPress: () => breakSeat(index)},
-          {text: "leave", onPress: () => leaveSeat(index)},
+          {text: "break", onPress: () => breakSeat(index, timedWaitSeats, setTimedWaitSeats, timer, setTimer)},
+          {text: "leave", onPress: () => leaveSeat(index, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)},
           { text: "Cancel", style: "cancel" }
         ]
       );
@@ -98,102 +95,11 @@ const Reserve = () => {
         "Options",
         "Do you want to claim this seat?",
         [
-          { text: "Claim", onPress: () => claimSeat(index) },
+          { text: "Claim", onPress: () => claimSeat(index, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
           { text: "Cancel", style: "cancel" }
         ]
       );
     }
-  };
-
-  const leaveSeat = async (index: number) => {
-    // in the future - this will be API call as well
-    if (timedWaitSeats.includes(index))
-      setTimedWaitSeats(timedWaitSeats.filter(seat => seat !== index));
-
-//     if (occupiedSeats.includes(index))
-//       setOccupiedSeats(occupiedSeats.filter(seat => seat !== index));
-
-    if (occupiedSeats.includes(index)) {
-      try {
-        const response = await fetch(LEAVE_API, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ seat_number: index.toString() }),
-        });
-        if (response.ok) {
-          // Fetch updated list of occupied seats
-          const updatedResponse = await fetch(OCCUPIED_API);
-          if (!updatedResponse.ok) {
-            throw new Error('Failed to fetch updated occupied seats');
-          }
-          const data = await updatedResponse.json();
-          const updated= data.results.map(item => parseInt(item.seat_number));
-          setOccupiedSeats(updated);
-          setSelectedSeat(null);  // Reset selected seat
-          Alert.alert('Success', 'Seat left successfully.');
-        } else {
-          Alert.alert('Error', 'Failed to leave seat.');
-        }
-      } catch (error) {
-        console.error(error);
-        Alert.alert('Error', 'An error occurred while claiming the seat.');
-      }
-    }
-  }
-
-  const claimSeat = async (index: number) => {
-    if (occupiedSeats.includes(index)) {
-      setTimedWaitSeats(timedWaitSeats.filter(seat => seat !== index));
-      setSelectedSeat(index); // Select the seat
-      Alert.alert('Success', 'Seat claimed successfully.');
-      return;
-    }
-    try {
-      const response = await fetch(CLAIM_API, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ seat_number: index.toString() }),
-      });
-      if (response.ok) {
-        // Fetch updated list of occupied seats
-        const updatedResponse = await fetch(OCCUPIED_API);
-        if (!updatedResponse.ok) {
-          throw new Error('Failed to fetch updated occupied seats');
-        }
-        const data = await updatedResponse.json();
-        const updated= data.results.map(item => parseInt(item.seat_number));
-        setOccupiedSeats(updated);
-        setSelectedSeat(index);  // Set the selected seat
-        Alert.alert('Success', 'Seat claimed successfully.');
-      } else {
-        Alert.alert('Error', 'Failed to claim seat.');
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'An error occurred while claiming the seat.');
-    }
-  };
-
-  const breakSeat = (index: number) => {
-    setTimedWaitSeats([...timedWaitSeats, index]);
-    setTimer({ ...timer, [index]: 120 }); // 2 minutes = 120 seconds
-  };
-
-  const flagSeat = (index: number) => {
-    // You can implement the logic to add a flag to the seat button here
-    // For simplicity, let's assume there's a state to keep track of flagged seats
-    if (!flaggedSeats.includes(index))
-      setFlaggedSeats([...flaggedSeats, index]);
-
-    console.log(flaggedSeats);
-
-    // implement notification
-    // show alert to the flagging user for now
-    Alert.alert('Notification Sent', 'Notification to the owner has been sent.');
   };
 
   return (
