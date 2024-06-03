@@ -1,8 +1,8 @@
 ---
 name: DRP Template
 about: Use this Template for DRP!
-title: ''
-labels: ''
+title: ADD TO DRP PROJECT (Then change this title)
+labels: enhancement
 assignees: ''
 
 ---
