@@ -1,12 +1,14 @@
 import React, { useState , useEffect} from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
-import { scale,  moderateScale } from 'react-native-size-matters';
 
+import styles from './Styles'
+import Seat from './Seat'
+import Timer from './Timer'
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
-const COMPUTER_SEATS = [0,1,2,3,4]; // positions of computer seats
+
 const BREAK_SEATS = [0, 9, 29];
 const DURATION = 1000; // minutes for now
 
@@ -14,6 +16,7 @@ const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
 const CLAIM_API = "https://libraryseat-62c310e5e91e.herokuapp.com/claim";
 const LEAVE_API = "https://libraryseat-62c310e5e91e.herokuapp.com/leave"
 const CLEAR_API = "https://libraryseat-62c310e5e91e.herokuapp.com/clear" // debugging
+
 
 const Reserve = () => {
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
@@ -61,18 +64,6 @@ const Reserve = () => {
 
     return () => clearInterval(interval);
   }, [selectedSeat, timer]);
-
-
-  const Timer = ({ remainingTime }: { remainingTime: number }) => {
-    const minutes = Math.floor(remainingTime / 60);
-    const seconds = remainingTime % 60;
-    return (
-      <Text style={styles.timerText}> Time Left :  {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-      </Text>
-    );
-  };
-
-
 
   const handlePress = (index: number) => {
     if (timedWaitSeats.includes(index) && index === selectedSeat) {
@@ -205,48 +196,9 @@ const Reserve = () => {
     Alert.alert('Notification Sent', 'Notification to the owner has been sent.');
   };
 
-  const renderSeat = ({ index }) => {
-    const seatType = COMPUTER_SEATS.includes(index) ? 'computer' : 'regular';
-    const occupied = occupiedSeats.includes(index);
-    const isInTimedWait = timedWaitSeats.includes(index);
-
-    const isDisabled = (selectedSeat !== null && selectedSeat !== index && !timedWaitSeats.includes(index) && !occupiedSeats.includes(index))
-
-    const isFlagged = flaggedSeats.includes(index);
-    const isSelected = selectedSeat === index;
-
-
-    return (
-      <TouchableOpacity
-        style={[
-          styles.seat,
-          seatType === 'computer' && styles.computerSeat,
-          occupied && styles.occupied,
-          isInTimedWait && styles.timedWaitSeat,
-          isDisabled && styles.disabledSeat,
-          isSelected && styles.selectedSeat,
-        ]}
-        onPress={() => !isDisabled && handlePress(index)}
-                disabled={isDisabled}
-      >
-        {isFlagged && (
-          <MaterialIcons name="flag" size={20} color="black" style={styles.flagIcon} />
-        )}
-        {seatType === 'computer' ? (
-          <>
-            <Ionicons name="laptop-outline" size={24} color="white" />
-            <Text style={styles.seatText}> {index}</Text>
-          </>
-        ) : (
-          <Text style={styles.seatText}>{index}</Text>
-        )}
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reserve Your Seat!!!!! </Text>
+      <Text style={styles.title}>Reserve Your Seat</Text>
       <Text style={styles.selectedSeatText}>
         {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
       </Text>
@@ -256,7 +208,17 @@ const Reserve = () => {
       <View style={styles.seatsContainer}>
         <FlatList
           data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
-          renderItem={renderSeat}
+          renderItem={({ index }) => (
+            <Seat
+              index={index}
+              selectedSeat={selectedSeat}
+              timedWaitSeats={timedWaitSeats}
+              occupiedSeats={occupiedSeats}
+              flaggedSeats={flaggedSeats}
+              handlePress={handlePress}
+              timer={timer}
+            />
+          )}
           keyExtractor={(item, index) => index.toString()}
           numColumns={SEATS_PER_ROW}
         />
@@ -264,67 +226,5 @@ const Reserve = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 100,
-    paddingHorizontal: 45,
-  },
-  title: {
-    fontSize: moderateScale(30),
-    fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  seatsContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  seat: {
-    width: scale(40),
-    height: scale(40),
-    margin: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 4,
-    backgroundColor: 'green',
-  },
-  computerSeat: {
-    backgroundColor: '#1AB502', // Color for computer seats
-  },
-  occupied: {
-    backgroundColor: '#F5513F', // Color for occupied
-  },
-  timedWaitSeat: {
-    backgroundColor: '#E2A30F', // Color for seats in timed wait state
-  },
-  disabledSeat: {
-    opacity: 0.5, // Make disabled seats semi-transparent
-  },
-  seatText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  selectedSeat: {
-    borderWidth: 5,
-    borderColor: 'black', // Adjust the color of the border as needed
-  },
-  selectedSeatText: {
-    fontSize: moderateScale(25),
-    fontWeight: 'bold',
-    margin : 20,
-  },
-  timerText: {
-    color: 'black',
-    fontSize: moderateScale(20),
-    marginTop: 4,
-    marginBottom: 10,
-  },
-
-
-});
 
 export default Reserve;
