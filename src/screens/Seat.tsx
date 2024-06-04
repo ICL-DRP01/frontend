@@ -14,29 +14,36 @@ const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats
   const isFlagged = flaggedSeats.includes(index);
   const isSelected = selectedSeat === index;
 
+  const textStyle = () => {
+    if (occupied || isInTimedWait) 
+      return styles.seatText;
+    return styles.freeSeatText;
+  }
+
   return (
     <TouchableOpacity
       style={[
         styles.seat,
         seatType === 'computer' && styles.computerSeat,
         occupied && styles.occupied,
+        !occupied && !isInTimedWait && styles.freeSeat,
         isInTimedWait && styles.timedWaitSeat,
         isDisabled && styles.disabledSeat,
         isSelected && styles.selectedSeat,
       ]}
       onPress={() => !isDisabled && handlePress(index)}
-      disabled={isDisabled}
+              disabled={isDisabled}
     >
       {isFlagged && (
-        <MaterialIcons name="flag" size={20} color="black" style={styles.flagIcon} />
+        <MaterialIcons name="flag" size={20} color="black"/>
       )}
       {seatType === 'computer' ? (
         <>
-          <Ionicons name="laptop-outline" size={24} color="white" />
-          <Text style={styles.seatText}> {index}</Text>
+          <Ionicons name="laptop-outline" size={20} style={textStyle()} />
+          <Text style={textStyle()}> {index}</Text>
         </>
       ) : (
-        <Text style={styles.seatText}>{index}</Text>
+        <Text style={textStyle()}>{index}</Text>
       )}
     </TouchableOpacity>
   );

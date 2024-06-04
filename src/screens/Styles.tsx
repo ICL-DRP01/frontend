@@ -27,16 +27,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
-    backgroundColor: 'green',
+    padding: 10,
+  },
+  freeSeat: {
+    backgroundColor: 'white',
+    borderColor: '#173d70',
+    borderWidth: 3,
   },
   computerSeat: {
     backgroundColor: '#1AB502', // Color for computer seats
   },
   occupied: {
-    backgroundColor: '#F5513F', // Color for occupied
+    backgroundColor: '#173d70', // Color for occupied
   },
   timedWaitSeat: {
-    backgroundColor: '#E2A30F', // Color for seats in timed wait state
+    backgroundColor: '#7aaaff', // Color for seats in timed wait state
   },
   disabledSeat: {
     opacity: 0.5, // Make disabled seats semi-transparent
@@ -53,6 +58,10 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(25),
     fontWeight: 'bold',
     margin : 20,
+  },
+  freeSeatText: {
+    fontWeight: 'bold',
+    color: '#173d70',
   },
   timerText: {
     color: 'black',
