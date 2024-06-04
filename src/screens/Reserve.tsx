@@ -10,7 +10,7 @@ import Timer from './Timer'
 import Button from './Button'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 import SeatInfo from './SeatInfo';
-import Camera from './Camera'
+import Scanner from './Scanner'
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
@@ -85,7 +85,7 @@ const Reserve = () => {
 
   const loadCamera = () => {
     console.log("Loading camera");
-    navigation.navigate("Camera");
+    navigation.navigate("Scanner");
   };
 
   return (
@@ -100,11 +100,9 @@ const Reserve = () => {
       { selectedSeat === null && <Button label="Scan QR code" press={() => loadCamera()} /> }
       </View>
 
-      {SeatInfo()}
-      <Text></Text>
-
       {/* Map */}
       <View style={styles.map}>
+        {SeatInfo()}
         <FlatList
           data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
           renderItem={({ index }) => (
