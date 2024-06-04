@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Button, Alert} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
 
@@ -22,16 +22,27 @@ export default function Scanner({ route, navigation }) {
     })();
   }, []);
 
+  const press = (index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
+    claimSeat(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
+    navigation.navigate("Reserve")
+  }
+
   const handleBarCodeScanned = ({ type, data }) => {
+
     setScanned(true);
-    if (data <= 0 || data > NUM_ROWS * SEATS_PER_ROW)
+    const index = parseInt(data)
+    if (index <= 0 || index > NUM_ROWS * SEATS_PER_ROW || index === NaN)
       alert("Error")
     else {
-      alert(`Value ${data} scanned`);
-      claimSeat(data, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
-
+      Alert.alert(
+        `Seat Number ${data} scanned`,
+        "Do you want to claim this seat?",
+        [
+          { text: "Claim", onPress: () => press(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+          { text: "Try Again", onPress: () => setScanned(false)}
+        ]
+      );
     }
-
   };
 
   const renderCamera = () => {
