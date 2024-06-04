@@ -85,7 +85,17 @@ const Reserve = () => {
 
   const loadCamera = () => {
     console.log("Loading camera");
-    navigation.navigate("Scanner");
+//     occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats
+    navigation.navigate("Scanner", {
+      occupiedSeats : occupiedSeats,
+      timedWaitSeats : timedWaitSeats,
+      setOccupiedSeats : setOccupiedSeats,
+      setSelectedSeat : setSelectedSeat,
+      setTimedWaitSeats : setTimedWaitSeats,
+    });
+
+
+
   };
 
   return (

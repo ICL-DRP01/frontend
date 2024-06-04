@@ -3,9 +3,17 @@ import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
 
-export default function Scanner() {
+import { claimSeat } from './SeatManagement';
+
+const NUM_ROWS = 6;
+const SEATS_PER_ROW = 5;
+
+export default function Scanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const {occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats} = route.params;
+  console.log(occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
+
 
   useEffect(() => {
     (async () => {
@@ -16,7 +24,14 @@ export default function Scanner() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Value ${data} scanned, type ${type}`);
+    if (data <= 0 || data > NUM_ROWS * SEATS_PER_ROW)
+      alert("Error")
+    else {
+      alert(`Value ${data} scanned`);
+      claimSeat(data, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
+
+    }
+
   };
 
   const renderCamera = () => {

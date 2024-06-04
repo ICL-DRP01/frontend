@@ -42,6 +42,7 @@ const claimSeat = async (
             const data = await updatedResponse.json();
             const updated = data.results.map(item => parseInt(item.seat_number));
             setOccupiedSeats(updated);
+            console.log("setting seat!")
             setSelectedSeat(index);  // Set the selected seat
         } else {
             Alert.alert('Error', 'Failed to claim seat.');
