@@ -10,7 +10,9 @@ const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats
   const seatType = COMPUTER_SEATS.includes(index) ? 'computer' : 'regular';
   const occupied = occupiedSeats.includes(index);
   const isInTimedWait = timedWaitSeats.includes(index);
-  const isDisabled = (selectedSeat !== null && selectedSeat !== index && !timedWaitSeats.includes(index) && !occupiedSeats.includes(index))
+  const isDisabled = (selectedSeat !== null && selectedSeat !== index) ||
+                     (occupied && selectedSeat !== index) ||
+                     (isInTimedWait && selectedSeat !== index);
   const isFlagged = flaggedSeats.includes(index);
   const isSelected = selectedSeat === index;
 
