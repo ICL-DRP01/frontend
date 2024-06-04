@@ -3,6 +3,7 @@ import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import styles from './Styles';
+import { scale } from 'react-native-size-matters';
 
 const COMPUTER_SEATS = [0,1,2,3,4]; // positions of computer seats
 
@@ -31,7 +32,6 @@ const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats
         !occupied && !isInTimedWait && styles.freeSeat,
         isInTimedWait && styles.timedWaitSeat,
         isDisabled && styles.disabledSeat,
-        isSelected && styles.selectedSeat,
       ]}
       onPress={() => !isDisabled && handlePress(index)}
               disabled={isDisabled}
@@ -41,7 +41,7 @@ const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats
       )}
       {seatType === 'computer' ? (
         <>
-          <Ionicons name="laptop-outline" size={20} style={textStyle()} />
+          <Ionicons name="laptop-outline" size={scale(17)} style={textStyle()} />
           <Text style={textStyle()}> {index}</Text>
         </>
       ) : (

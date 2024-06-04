@@ -50,10 +50,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  selectedSeat: {
-    borderWidth: 5,
-    borderColor: 'black', // Adjust the color of the border as needed
-  },
   selectedSeatText: {
     fontSize: moderateScale(25),
     fontWeight: 'bold',
