@@ -1,6 +1,7 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState , useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
+import {useNavigation} from '@react-navigation/native';
 
 
 import styles from './Styles'
@@ -9,6 +10,7 @@ import Timer from './Timer'
 import Button from './Button'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 import SeatInfo from './SeatInfo';
+import Camera from './Camera'
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
@@ -16,6 +18,7 @@ const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/"; // dupli
 
 const BREAK_SEATS = [0, 9, 29];
 const DURATION = 1000; // minutes for now
+
 
 const Reserve = () => {
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
@@ -28,6 +31,9 @@ const Reserve = () => {
 
   // timer
   const [timer, setTimer] = useState<{ [key: number]: number }>({}); // Timer state for seats
+
+  // navigation
+  const navigation = useNavigation();
 
   // API call to fetch occupiedSeats
   useEffect(() => {
@@ -77,6 +83,11 @@ const Reserve = () => {
     }
   };
 
+  const loadCamera = () => {
+    console.log("Loading camera");
+    navigation.navigate("Camera");
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -85,7 +96,8 @@ const Reserve = () => {
           <Text style={styles.selectedSeatText}>
             {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
           </Text>
-
+      {/* show scan QR when seat is not chosen */}
+      { selectedSeat === null && <Button label="Scan QR code" press={() => loadCamera()} /> }
       </View>
 
       {SeatInfo()}
