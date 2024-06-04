@@ -4,17 +4,33 @@ import { scale,  moderateScale } from 'react-native-size-matters';
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'column',
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 100,
-    paddingHorizontal: 45,
+    padding: 20
   },
+  header: {
+    flex: 1,
+//     backgroundColor: 'red',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  map: {
+    flex: 3,
+//     backgroundColor: 'darkorange',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  footer: {
+    flex: 1,
+//     backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+
   title: {
     fontSize: moderateScale(30),
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 20,
   },
   seatsContainer: {
     alignItems: 'center',
@@ -53,7 +69,6 @@ const styles = StyleSheet.create({
   selectedSeatText: {
     fontSize: moderateScale(25),
     fontWeight: 'bold',
-    margin : 20,
   },
   freeSeatText: {
     fontWeight: 'bold',
@@ -62,7 +77,6 @@ const styles = StyleSheet.create({
   timerText: {
     color: 'black',
     fontSize: moderateScale(20),
-    marginTop: 4,
     marginBottom: 10,
   },
 

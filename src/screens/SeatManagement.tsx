@@ -23,7 +23,6 @@ const claimSeat = async (
     if (occupiedSeats.includes(index)) {
         setTimedWaitSeats(timedWaitSeats.filter(seat => seat !== index));
         setSelectedSeat(index); // Select the seat
-        Alert.alert('Success', 'Seat claimed successfully.');
         return;
     }
     try {
@@ -44,7 +43,6 @@ const claimSeat = async (
             const updated = data.results.map(item => parseInt(item.seat_number));
             setOccupiedSeats(updated);
             setSelectedSeat(index);  // Set the selected seat
-            Alert.alert('Success', 'Seat claimed successfully.');
         } else {
             Alert.alert('Error', 'Failed to claim seat.');
         }
@@ -84,7 +82,6 @@ const leaveSeat = async (
                 const updated = data.results.map(item => parseInt(item.seat_number));
                 setOccupiedSeats(updated);
                 setSelectedSeat(null);  // Reset selected seat
-                Alert.alert('Success', 'Seat left successfully.');
             } else {
                 Alert.alert('Error', 'Failed to leave seat.');
             }

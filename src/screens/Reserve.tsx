@@ -6,6 +6,7 @@ import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
 import styles from './Styles'
 import Seat from './Seat'
 import Timer from './Timer'
+import Button from './Button'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 
 const NUM_ROWS = 6;
@@ -104,14 +105,17 @@ const Reserve = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reserve Your Seat</Text>
-      <Text style={styles.selectedSeatText}>
-        {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
-      </Text>
-       {selectedSeat !== null && timedWaitSeats.includes(selectedSeat) && (
-          <Timer remainingTime={timer[selectedSeat]} />
-       )}
-      <View style={styles.seatsContainer}>
+      {/* Header */}
+      <View style={styles.header}>
+          <Text style={styles.title}>Reserve Your Seat</Text>
+          <Text style={styles.selectedSeatText}>
+            {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
+          </Text>
+
+      </View>
+
+      {/* Map */}
+      <View style={styles.map}>
         <FlatList
           data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
           renderItem={({ index }) => (
@@ -128,9 +132,29 @@ const Reserve = () => {
           keyExtractor={(item, index) => index.toString()}
           numColumns={SEATS_PER_ROW}
         />
+                   {selectedSeat !== null && timedWaitSeats.includes(selectedSeat) && (
+                      <Timer remainingTime={timer[selectedSeat]} />
+                   )}
+      </View>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        {selectedSeat !== null && <Button label="Leave your seat" press={() => leaveSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)}/>}
+        {selectedSeat !== null &&
+           <Button
+             label={
+               timedWaitSeats.includes(selectedSeat)
+                 ? "Return from break"
+                 : "Take a break"}
+             press={
+               timedWaitSeats.includes(selectedSeat)
+                ? () => claimSeat(selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
+                : () => breakSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)}/>}
       </View>
     </View>
   );
 };
+
+
 
 export default Reserve;
