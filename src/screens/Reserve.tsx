@@ -9,6 +9,7 @@ import Timer from './Timer'
 import Button from './Button'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 import SeatInfo from './SeatInfo';
+import { schedulePushNotification } from './Notifications';
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
@@ -56,6 +57,9 @@ const Reserve = () => {
         const newTimers = { ...prevTimers };
         if (newTimers[selectedSeat] > 0) {
           newTimers[selectedSeat] -= 1;
+          if (newTimers[selectedSeat] === 115) {
+            schedulePushNotification();
+          }
         }
         return newTimers;
       });
