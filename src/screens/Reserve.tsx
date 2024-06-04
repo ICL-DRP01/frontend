@@ -8,6 +8,7 @@ import Seat from './Seat'
 import Timer from './Timer'
 import Button from './Button'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
+import SeatInfo from './SeatInfo';
 
 const NUM_ROWS = 6;
 const SEATS_PER_ROW = 5;
@@ -86,6 +87,9 @@ const Reserve = () => {
           </Text>
 
       </View>
+
+      {SeatInfo()}
+      <Text></Text>
 
       {/* Map */}
       <View style={styles.map}>
