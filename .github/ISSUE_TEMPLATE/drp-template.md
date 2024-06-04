@@ -7,24 +7,15 @@ assignees: ''
 
 ---
 
-## Assignees
-
-<!-- e.g. @harens and @PenguinInTheSky. -->
-
 ## User Story
 
-<!-- Insert entries in-between stars -->
+| | |
+|---|---|
+| As a | **Customer Archetype** |
+| I want | **Job to be done** |
+| So I can | **Benefit** |
 
-As a **Customer Archetype**
-I want **Job to be done**,
-So I can **Benefit**.
+## Tasks
 
-<!--
-e.g.
-
-As a <commuter>
-I want <to see all routes I could travel to
-location>,
-so I can <choose the route that gets me
-their the quickest>.
--->
+- [ ] Task 1
+- [X] Task 2
