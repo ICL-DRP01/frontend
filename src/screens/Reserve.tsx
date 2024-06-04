@@ -64,34 +64,7 @@ const Reserve = () => {
   }, [selectedSeat, timer]);
 
   const handlePress = (index: number) => {
-    if (timedWaitSeats.includes(index) && index === selectedSeat) {
-      Alert.alert("Options",
-        "Do you want to take get back or leave?",
-        [
-          {text: "get back", onPress: () => claimSeat(index, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
-          {text: "leave", onPress: () => leaveSeat(index, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)},
-          { text: "Cancel", style: "cancel" }
-        ]
-      );
-    } else if ((timedWaitSeats.includes(index) || occupiedSeats.includes(index)) && selectedSeat !== index)  {
-      Alert.alert("Options",
-        "Do you want to flag this seat?",
-        [
-          {text: "flag", onPress: () => flagSeat(index, flaggedSeats, setFlaggedSeats)},
-          { text: "Cancel", style: "cancel" }
-        ]
-      );
-    }
-    else if (selectedSeat === index) {
-      Alert.alert("Options",
-        "Do you want to take break or leave",
-        [
-          {text: "break", onPress: () => breakSeat(index, timedWaitSeats, setTimedWaitSeats, timer, setTimer)},
-          {text: "leave", onPress: () => leaveSeat(index, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)},
-          { text: "Cancel", style: "cancel" }
-        ]
-      );
-    } else {
+    if (selectedSeat === null) {
       Alert.alert(
         "Options",
         "Do you want to claim this seat?",
@@ -107,7 +80,7 @@ const Reserve = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-          <Text style={styles.title}>Reserve Your Seat</Text>
+          <Text style={styles.title}>Choose Your Seat</Text>
           <Text style={styles.selectedSeatText}>
             {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
           </Text>
@@ -132,9 +105,9 @@ const Reserve = () => {
           keyExtractor={(item, index) => index.toString()}
           numColumns={SEATS_PER_ROW}
         />
-                   {selectedSeat !== null && timedWaitSeats.includes(selectedSeat) && (
-                      <Timer remainingTime={timer[selectedSeat]} />
-                   )}
+         {selectedSeat !== null && timedWaitSeats.includes(selectedSeat) && (
+            <Timer remainingTime={timer[selectedSeat]} />
+         )}
       </View>
 
       {/* Footer */}
