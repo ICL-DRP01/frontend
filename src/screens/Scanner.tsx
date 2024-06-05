@@ -28,21 +28,32 @@ export default function Scanner({ route, navigation }) {
   }
 
   const handleBarCodeScanned = ({ type, data }) => {
-
     setScanned(true);
+
     const index = parseInt(data)
-    if (index <= 0 || index > NUM_ROWS * SEATS_PER_ROW || index === NaN)
-      alert("Error")
-    else {
+
+    // Invalid if not QR code, or value out of seat range
+    const invalid_value = isNaN(index) || index < 0 || index >= NUM_ROWS * SEATS_PER_ROW;
+    const invalid_android_type = typeof type === "number" && type !== 256;
+    const invalid_ios_type = typeof type === "string" && type !== "org.iso.QRCode";
+    if (invalid_android_type || invalid_ios_type || invalid_value) {
       Alert.alert(
-        `Seat Number ${data} scanned`,
-        "Do you want to claim this seat?",
-        [
-          { text: "Claim", onPress: () => press(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
-          { text: "Try Again", onPress: () => setScanned(false)}
-        ]
+        'Invalid Code',
+        'Please scan a library seat QR code',
+        [ { text: 'Try Again', onPress: () => setScanned(false) } ]
       );
+      return;
     }
+
+    // Successful QR scan
+    Alert.alert(
+      `Seat Number ${data} scanned`,
+      "Do you want to claim this seat?",
+      [
+        { text: "Claim", onPress: () => press(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+        { text: "Try Again", onPress: () => setScanned(false)}
+      ]
+    );
   };
 
   const renderCamera = () => {
