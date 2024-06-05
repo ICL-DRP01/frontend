@@ -53,12 +53,15 @@ const Reserve = () => {
   useEffect(() => {
     if (selectedSeat === null) return;
     const interval = setInterval(() => {
+      const notify = async () => {
+        await schedulePushNotification();
+      }
       setTimer(prevTimers => {
         const newTimers = { ...prevTimers };
         if (newTimers[selectedSeat] > 0) {
           newTimers[selectedSeat] -= 1;
           if (newTimers[selectedSeat] === 115) {
-            schedulePushNotification();
+            notify().catch(console.error);
           }
         }
         return newTimers;
