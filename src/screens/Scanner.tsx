@@ -36,10 +36,20 @@ export default function Scanner({ route, navigation }) {
     const invalid_value = isNaN(index) || index < 0 || index >= NUM_ROWS * SEATS_PER_ROW;
     const invalid_android_type = typeof type === "number" && type !== 256;
     const invalid_ios_type = typeof type === "string" && type !== "org.iso.QRCode";
+    const isClaimed = timedWaitSeats.includes(index) || occupiedSeats.includes(index);
     if (invalid_android_type || invalid_ios_type || invalid_value) {
       Alert.alert(
         'Invalid Code',
         'Please scan a library seat QR code',
+        [ { text: 'Try Again', onPress: () => setScanned(false) } ]
+      );
+      return;
+    }
+
+    if (isClaimed) {
+      Alert.alert(
+        'Already claimed',
+        'This seat is already claimed, choose another seat',
         [ { text: 'Try Again', onPress: () => setScanned(false) } ]
       );
       return;
