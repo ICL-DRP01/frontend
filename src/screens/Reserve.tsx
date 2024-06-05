@@ -19,8 +19,29 @@ const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/"; // dupli
 const BREAK_SEATS = [0, 9, 29];
 const DURATION = 1000; // minutes for now
 
+async function sendPushNotification(expoPushToken: string) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { someData: 'goes here' },
+  };
 
-const Reserve = () => {
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+
+const Reserve = ({ expoPushToken }) => {
+  console.log(expoPushToken);
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
   // the seats that are on break
   const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>(BREAK_SEATS); // Track seats in timed wait state
@@ -72,6 +93,7 @@ const Reserve = () => {
 
   const handlePress = (index: number) => {
     if (selectedSeat === null) {
+      sendPushNotification(expoPushToken);
       Alert.alert(
         "Options",
         "Do you want to claim this seat?",
