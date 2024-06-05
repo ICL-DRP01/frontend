@@ -18,6 +18,7 @@ Notifications.setNotificationHandler({
 });
   
   const App = () => {
+    registerForPushNotificationsAsync();
     return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
