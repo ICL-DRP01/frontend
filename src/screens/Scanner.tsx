@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Button, Alert} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
 
-export default function Scanner() {
+import { claimSeat } from './SeatManagement';
+
+const NUM_ROWS = 6;
+const SEATS_PER_ROW = 5;
+
+export default function Scanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const {occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats} = route.params;
+  console.log(occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
+
 
   useEffect(() => {
     (async () => {
@@ -14,9 +22,48 @@ export default function Scanner() {
     })();
   }, []);
 
+  const press = (index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
+    claimSeat(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
+    navigation.navigate("Seat Finder")
+  }
+
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Value ${data} scanned, type ${type}`);
+
+    const index = parseInt(data)
+
+    // Invalid if not QR code, or value out of seat range
+    const invalid_value = isNaN(index) || index < 0 || index >= NUM_ROWS * SEATS_PER_ROW;
+    const invalid_android_type = typeof type === "number" && type !== 256;
+    const invalid_ios_type = typeof type === "string" && type !== "org.iso.QRCode";
+    const isClaimed = timedWaitSeats.includes(index) || occupiedSeats.includes(index);
+    if (invalid_android_type || invalid_ios_type || invalid_value) {
+      Alert.alert(
+        'Invalid Code',
+        'Please scan a library seat QR code',
+        [ { text: 'Try Again', onPress: () => setScanned(false) } ]
+      );
+      return;
+    }
+
+    if (isClaimed) {
+      Alert.alert(
+        'Already claimed',
+        'This seat is already claimed, choose another seat',
+        [ { text: 'Try Again', onPress: () => setScanned(false) } ]
+      );
+      return;
+    }
+
+    // Successful QR scan
+    Alert.alert(
+      `Seat Number ${data} scanned`,
+      "Do you want to claim this seat?",
+      [
+        { text: "Claim", onPress: () => press(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+        { text: "Try Again", onPress: () => setScanned(false)}
+      ]
+    );
   };
 
   const renderCamera = () => {
