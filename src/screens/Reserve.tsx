@@ -8,6 +8,7 @@ import styles from './Styles'
 import Seat from './Seat'
 import Timer from './Timer'
 import Button from './Button'
+import QRButton from './QRButton'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 import SeatInfo from './SeatInfo';
 import Scanner from './Scanner'
@@ -102,12 +103,10 @@ const Reserve = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-          <Text style={styles.title}>Choose Your Seat</Text>
+          <Text style={styles.title}>Scan Your Seat</Text>
           <Text style={styles.selectedSeatText}>
             {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
           </Text>
-      {/* show scan QR when seat is not chosen */}
-      { selectedSeat === null && <Button label="Scan QR code" press={() => loadCamera()} /> }
       </View>
 
       {/* Map */}
@@ -129,29 +128,34 @@ const Reserve = () => {
           keyExtractor={(item, index) => index.toString()}
           numColumns={SEATS_PER_ROW}
         />
-         {selectedSeat !== null && timedWaitSeats.includes(selectedSeat) && (
-            <Timer remainingTime={timer[selectedSeat]} />
-         )}
+
       </View>
 
       {/* Footer */}
       <View style={styles.footer}>
-        {selectedSeat !== null && <Button label="Leave your seat" press={() => leaveSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)}/>}
-        {selectedSeat !== null &&
-           <Button
-             label={
-               timedWaitSeats.includes(selectedSeat)
-                 ? "Return from break"
-                 : "Take a break"}
-             press={
-               timedWaitSeats.includes(selectedSeat)
-                ? () => claimSeat(selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
-                : () => breakSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)}/>}
+        { selectedSeat === null
+          ? <QRButton press={() => loadCamera()} />
+          : <View>
+               {selectedSeat !== null && timedWaitSeats.includes(selectedSeat)
+                  ? <Timer remainingTime={timer[selectedSeat]} />
+                  : <Text style={styles.timerText} />
+               }
+              <Button label="Leave your seat" press={() => leaveSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)}/>
+              <Button
+               label={
+                 timedWaitSeats.includes(selectedSeat)
+                   ? "Return from break"
+                   : "Take a break"}
+               press={
+                 timedWaitSeats.includes(selectedSeat)
+                  ? () => claimSeat(selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
+                  : () => breakSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)}/>
+            </View>
+          }
       </View>
     </View>
   );
 };
-
 
 
 export default Reserve;

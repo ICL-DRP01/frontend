@@ -6,22 +6,22 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     flex: 1,
-    padding: 20,
+    padding: 10,
   },
   header: {
-    flex: 1,
+    flex: 20,
 //     backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center'
   },
   map: {
-    flex: 3,
+    flex: 50,
 //     backgroundColor: 'darkorange',
     alignItems: 'center',
     justifyContent: 'center'
   },
   footer: {
-    flex: 1,
+    flex: 30,
 //     backgroundColor: 'green',
     alignItems: 'center',
     justifyContent: 'center'
@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: moderateScale(20),
     marginBottom: 10,
+    textAlign: 'center'
   },
 
 

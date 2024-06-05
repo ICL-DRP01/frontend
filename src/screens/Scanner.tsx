@@ -24,7 +24,7 @@ export default function Scanner({ route, navigation }) {
 
   const press = (index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
     claimSeat(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
-    navigation.navigate("Reserve")
+    navigation.navigate("Seat Finder")
   }
 
   const handleBarCodeScanned = ({ type, data }) => {
