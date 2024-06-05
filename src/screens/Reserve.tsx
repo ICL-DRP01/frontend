@@ -21,7 +21,31 @@ const BREAK_SEATS = [0, 9, 29];
 const DURATION = 1000; // minutes for now
 
 
-const Reserve = () => {
+async function sendPushNotification(expoPushToken: string) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Timer up!',
+    body: 'You need to get back to your seat!',
+//     data: { someData: {selectedSeat} },
+  };
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+
+const Reserve = ({ route, expoPushToken }) => {
+//   const { expoPushToken } = route.params;
+//   const [expoToken, setExpoPushToken] = useState<string | null>(expoPushToken);
+  console.log("Token is: " + expoPushToken)
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
   // the seats that are on break
   const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>(BREAK_SEATS); // Track seats in timed wait state
@@ -63,6 +87,10 @@ const Reserve = () => {
         const newTimers = { ...prevTimers };
         if (newTimers[selectedSeat] > 0) {
           newTimers[selectedSeat] -= 1;
+          // for testing - send notification 5 seconds in
+          if (newTimers[selectedSeat] === 115) {
+            sendPushNotification(expoPushToken);
+          }
         }
         return newTimers;
       });
@@ -85,6 +113,7 @@ const Reserve = () => {
   };
 
   const loadCamera = () => {
+
     console.log("Loading camera");
 //     occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats
     navigation.navigate("Scanner", {
