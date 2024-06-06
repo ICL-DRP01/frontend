@@ -21,13 +21,16 @@ const BREAK_SEATS = [0, 9, 29];
 const DURATION = 1000; // minutes for now
 
 
-async function sendPushNotification(expoPushToken: string) {
+async function sendPushNotification(expoPushToken: string, seatNumber: number, timeRemaining: number) {
+
+  const finishTime = new Date();
+  finishTime.setSeconds(finishTime.getSeconds() + timeRemaining);
+
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: 'Timer up!',
-    body: 'You need to get back to your seat!',
-//     data: { someData: {selectedSeat} },
+    title: seatNumber === null ? 'Get back to your seat!' : `Get back to seat ${seatNumber}!`,
+    body: `Your break finishes at ${finishTime.getHours() + ":" + finishTime.getMinutes()}`,
   };
 
   await fetch('https://exp.host/--/api/v2/push/send', {
@@ -89,7 +92,7 @@ const Reserve = ({ route, expoPushToken }) => {
           newTimers[selectedSeat] -= 1;
           // for testing - send notification 5 seconds in
           if (newTimers[selectedSeat] === 115) {
-            sendPushNotification(expoPushToken);
+            sendPushNotification(expoPushToken, selectedSeat, newTimers[selectedSeat]);
           }
         }
         return newTimers;
