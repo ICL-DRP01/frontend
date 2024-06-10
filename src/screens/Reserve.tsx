@@ -75,6 +75,8 @@ const Reserve = ({ route, expoPushToken }) => {
         const occupied = data.results.map(item => parseInt(item.seat_number));
         console.log(occupied);
         setOccupiedSeats(occupied);
+        const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
+        setTimedWaitSeats(breakSeats);
       } catch (err) {
         console.log(err);
       }
