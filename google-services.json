@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "987145136398",
+    "project_id": "drp01-7bffe",
+    "storage_bucket": "drp01-7bffe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987145136398:android:d965e275afcca8bef38f5f",
+        "android_client_info": {
+          "package_name": "com.imperial.drp01"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI3DPHXBl-ioBEsCX_bcYngwmJMmWLzsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
