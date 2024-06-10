@@ -71,6 +71,7 @@ async function registerForPushNotificationsAsync() {
 //       console.log(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
+      console.log("this is the error " + e);
       handleRegistrationError(`${e}`);
     }
   } else {
