@@ -42,7 +42,6 @@ const flagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], s
             } else {
                 const result = parseMessage(e.data);
                 setFlaggedSeats([...flaggedSeats, index]);
-
             }
 
         };
@@ -146,7 +145,7 @@ const claimSeat = async (
         ; // Select the seat
         return;
     }
-
+    
     ws.send("book " + index);
     ws.onmessage = (e) => {
        console.log(e.data);

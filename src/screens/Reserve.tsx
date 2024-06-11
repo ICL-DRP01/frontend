@@ -157,6 +157,7 @@ const Reserve = ({ route, expoPushToken }) => {
             sendPushNotification(expoPushToken, selectedSeat, newTimers[selectedSeat]);
           }
           if (newTimers[selectedSeat] == 0) {
+            leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat);
             flagSeat(ws ,selectedSeat, flaggedSeats, setFlaggedSeats);
           }
         }
