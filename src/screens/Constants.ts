@@ -1,3 +1,4 @@
+
 export const PRIMARY_COLOUR = '#173d70';
 export const SECONDARY_COLOUR = '#7aaaff';
 
@@ -15,7 +16,9 @@ export const CLAIM_API = API_ENDPOINT + "claim";
 export const LEAVE_API = API_ENDPOINT + "leave";
 export const BREAK_API = API_ENDPOINT + "break";
 export const UNBREAK_API = API_ENDPOINT + "unbreak";
+
 export const FLAG_API = API_ENDPOINT + "flag";
 
-// TODO: Remove
+
 export const FLAGGED_SEATS = [1, 5, 10];
+

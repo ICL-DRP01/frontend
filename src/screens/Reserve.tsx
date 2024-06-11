@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState , useEffect, useRef} from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
 import {useNavigation} from '@react-navigation/native';
@@ -50,32 +50,99 @@ const Reserve = ({ route, expoPushToken }) => {
   // flagged seats
   const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
 
+
   // timer
   const [timer, setTimer] = useState<{ [key: number]: number }>({}); // Timer state for seats
 
   // navigation
   const navigation = useNavigation();
 
-  // API call to fetch occupiedSeats
+  // websocket
+  var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
+
+
   useEffect(() => {
-    const fetchOccupiedSeats = async () => {
-      try {
-        const response = await fetch(OCCUPIED_API);
-        if (!response.ok) {
-          throw new Error('Failed to fetch occupied seats');
-        }
-        const data = await response.json(); // what we get form the API
-        const occupied = data.results.map(item => parseInt(item.seat_number));
-        console.log(occupied);
-        setOccupiedSeats(occupied);
-        const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
-        setTimedWaitSeats(breakSeats);
-      } catch (err) {
-        console.log(err);
+
+    const connectWebSocket = () => {
+      ws.onopen = () => {
+        console.log("connected to server");
+      };
+      ws.onclose = (e) => {
+        console.log("Closing connection + reconnecting ");
+        console.log(e);
+        connectWebSocket();
+      };
+      ws.onerror = (e) => {
+        console.log("Error, " + e)
+      };
+      ws.onmessage = (e) => {
+        console.log(e.data);
+
+        const result = parseMessage(e.data);
+
+        setOccupiedSeats(result.booked);
+        setFlaggedSeats(result.flagged);
+        setTimedWaitSeats(result.break);
+
+      };
+
+
+    }
+
+    connectWebSocket();
+
+
+    }, []
+  )
+
+  // duplicate - should remove when refactoring
+  const parseMessage = (message) => {
+      const result = {
+        booked: [],
+        flagged: [],
+        break: []
+      };
+
+      const bookedMatch = message.match(/booked: \{([^\}]*)\}/);
+      const flaggedMatch = message.match(/flagged: \{([^\}]*)\}/);
+      const breakMatch = message.match(/break: \{([^\}]*)\}/);
+
+      if (bookedMatch && bookedMatch[1]) {
+        result.booked = bookedMatch[1].split(', ').map(Number);
       }
+
+      if (flaggedMatch && flaggedMatch[1]) {
+        result.flagged = flaggedMatch[1].split(', ').map(Number);
+      }
+
+      if (breakMatch && breakMatch[1]) {
+        result.break = breakMatch[1].split(', ').map(Number);
+      }
+
+      return result;
     };
-    fetchOccupiedSeats();
-  }, []);
+
+
+  // API call to fetch occupiedSeats
+//   useEffect(() => {
+//     const fetchOccupiedSeats = async () => {
+//       try {
+//         const response = await fetch(OCCUPIED_API);
+//         if (!response.ok) {
+//           throw new Error('Failed to fetch occupied seats');
+//         }
+//         const data = await response.json(); // what we get form the API
+//         const occupied = data.results.map(item => parseInt(item.seat_number));
+//         console.log(occupied);
+//         setOccupiedSeats(occupied);
+//         const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
+//         setTimedWaitSeats(breakSeats);
+//       } catch (err) {
+//         console.log(err);
+//       }
+//     };
+//     fetchOccupiedSeats();
+//   }, []);
 
   // timer implementation
   useEffect(() => {
@@ -90,7 +157,7 @@ const Reserve = ({ route, expoPushToken }) => {
             sendPushNotification(expoPushToken, selectedSeat, newTimers[selectedSeat]);
           }
           if (newTimers[selectedSeat] == 0) {
-            flagSeat(selectedSeat, flaggedSeats, setFlaggedSeats);
+            flagSeat(ws ,selectedSeat, flaggedSeats, setFlaggedSeats);
           }
         }
         return newTimers;
@@ -106,7 +173,7 @@ const Reserve = ({ route, expoPushToken }) => {
         "Options",
         "Do you want to claim this seat?",
         [
-          { text: "Claim", onPress: () => claimSeat(index, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+          { text: "Claim", onPress: () => claimSeat(ws , index, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
           { text: "Cancel", style: "cancel" }
         ]
       );
@@ -150,14 +217,14 @@ const Reserve = ({ route, expoPushToken }) => {
   const drawLeaveButton = () => (
     <Button
       label="Leave your seat"
-      press={ () => leaveSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat) }
+      press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat) }
     />
   );
 
   const drawBreakButton = () => (
     awayFromDesk()
-      ? <Button label={"Return from break"} press={() => claimSeat(selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)} />
-      : <Button label={"Take a break"} press={() => breakSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)} />
+      ? <Button label={"Return from break"} press={() => claimSeat(ws , selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)} />
+      : <Button label={"Take a break"} press={() => breakSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)} />
   )
 
   // Top-Level JSX
