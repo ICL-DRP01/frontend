@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Reserve from './src/screens/Reserve';
 import Scanner from './src/screens/Scanner';
+import Selector from './src/screens/Selector';
+import Librarian from './src/screens/Librarian';
 
 // to not show deprecated warnings in the app - barcode - or update it - comment out when testing
 // import { LogBox } from 'react-native';
@@ -107,11 +109,15 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Seat Finder">
-            {props => <Reserve {...props} expoPushToken={expoPushToken} />}
-          </Stack.Screen>
+      <Stack.Navigator>
+        <Stack.Screen name="Selector">
+          {props => <Selector {...props} expoPushToken={expoPushToken} />}
+        </Stack.Screen>
+        <Stack.Screen name="Seat Finder">
+          {props => <Reserve {...props} expoPushToken={expoPushToken} />}
+        </Stack.Screen>
          <Stack.Screen name="Scanner" component={Scanner} />
+         <Stack.Screen name="Librarian" component={Librarian} />
       </Stack.Navigator>
     </NavigationContainer>
   );
