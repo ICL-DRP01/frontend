@@ -20,6 +20,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  list: {
+    borderWidth: 3,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
   footer: {
     flex: 30,
 //     backgroundColor: 'green',
@@ -31,6 +36,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: moderateScale(30),
     fontWeight: 'bold',
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   seatsContainer: {
     alignItems: 'center',

@@ -1,12 +1,55 @@
 import { Alert } from 'react-native';
 import { OCCUPIED_API, CLAIM_API, LEAVE_API, BREAK_API, UNBREAK_API } from './Constants'
 
-const flagSeat = (index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
-    if (!flaggedSeats.includes(index))
-        setFlaggedSeats([...flaggedSeats, index]);
-
+const flagSeat = async (index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
+    if (!flaggedSeats.includes(index)) {
+        try {
+            const response = await fetch(FLAG_API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ seat_number: index.toString() }),
+            });
+            if (response.ok) {
+                setFlaggedSeats([...flaggedSeats, index]);
+            } else {
+                Alert.alert('Error', 'Failed to flag seat.');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'An error occurred while flagging the seat.');
+        }
+    }
     console.log(flaggedSeats);
-    Alert.alert('Notification Sent', 'Notification to the owner has been sent.');
+};
+
+const unflagSeat = async (index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
+    if (!flaggedSeats.includes(index)) {
+        try {
+            const response = await fetch(UNFLAG_API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ seat_number: index.toString() }),
+            });
+            if (response.ok) {
+                const updatedResponse = await fetch(FLAG_API);
+                if (!updatedResponse.ok) {
+                    throw new Error('Failed to get updated flagged seats');
+                }
+                const data = await updatedResponse.json();
+                const updated = data.results.map(item => parseInt(item.seatNumber));
+                setFlaggedSeats(updated);
+            } else {
+                Alert.alert('Error', 'Failed to unflag seat.');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'An error occurred while unflagging the seat.');
+        }
+    }
 };
 
 const claimSeat = async (
@@ -129,11 +172,11 @@ const breakSeat = async (
         } else {
             Alert.alert('Error', 'Failed to break seat.');
         }
-    
+
     } catch (error) {
         console.error(error);
         Alert.alert('Error', 'An error occurred while breaking the seat.');
     }
 };
 
-export { flagSeat, claimSeat, leaveSeat, breakSeat };
+export { flagSeat, unflagSeat, claimSeat, leaveSeat, breakSeat };

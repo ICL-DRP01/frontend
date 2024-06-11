@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { PRIMARY_COLOUR } from './Constants.ts';
 
 const Selector = ({ expoPushToken }) => {
 
   const navigation = useNavigation();
 
-  const makeButton = ( text, press ) => (
+  const makeButton = (text, press) => (
     <View style={{ alignItems: 'center' }}>
       <Pressable style={styles.button} onPress={press}>
         <Text style={styles.text}>{text}</Text>
@@ -16,9 +16,9 @@ const Selector = ({ expoPushToken }) => {
 
   return (
     <View style={{ justifyContent: 'center', flex: 1 }}>
-        {makeButton("Student View", () => navigation.navigate("Seat Finder", {expoPushToken}))}
-        <View style={{ height: 50 }} />
-        {makeButton("Librarian View", () => navigation.navigate("Librarian"))}
+      {makeButton("Student View", () => navigation.navigate("Seat Finder", { expoPushToken }))}
+      <View style={{ height: 50 }} />
+      {makeButton("Librarian View", () => navigation.navigate("Flagged Seats List"))}
     </View>
   );
 };

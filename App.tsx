@@ -4,7 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Reserve from './src/screens/Reserve';
 import Scanner from './src/screens/Scanner';
 import Selector from './src/screens/Selector';
-import Librarian from './src/screens/Librarian';
+import LibrarianMap from './src/screens/librarian/LibrarianMap';
+import LibrarianList from './src/screens/librarian/LibrarianList';
 
 // to not show deprecated warnings in the app - barcode - or update it - comment out when testing
 // import { LogBox } from 'react-native';
@@ -12,7 +13,7 @@ import Librarian from './src/screens/Librarian';
 // LogBox.ignoreAllLogs(true);
 
 import { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, Platform } from 'react-native';
+import { Text, View, Button, Platform, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
@@ -30,7 +31,7 @@ Notifications.setNotificationHandler({
 
 
 function handleRegistrationError(errorMessage: string) {
-  alert(errorMessage);
+  Alert.alert(errorMessage);
   throw new Error(errorMessage);
 }
 
@@ -66,7 +67,7 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-//       console.log(pushTokenString);
+      //       console.log(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);
@@ -116,8 +117,9 @@ const App = () => {
         <Stack.Screen name="Seat Finder">
           {props => <Reserve {...props} expoPushToken={expoPushToken} />}
         </Stack.Screen>
-         <Stack.Screen name="Scanner" component={Scanner} />
-         <Stack.Screen name="Librarian" component={Librarian} />
+        <Stack.Screen name="Scanner" component={Scanner} />
+        <Stack.Screen name="Flagged Seats List" component={LibrarianList} />
+        <Stack.Screen name="Librarian Map" component={LibrarianMap} />
       </Stack.Navigator>
     </NavigationContainer>
   );
