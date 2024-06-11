@@ -188,6 +188,7 @@ const Reserve = ({ route, expoPushToken }) => {
   const navToCamera = () => {
     console.log("Loading camera");
     navigation.navigate("Scanner", {
+      ws : ws,
       occupiedSeats : occupiedSeats,
       timedWaitSeats : timedWaitSeats,
       setOccupiedSeats : setOccupiedSeats,

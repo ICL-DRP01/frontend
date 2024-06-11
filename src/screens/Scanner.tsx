@@ -9,7 +9,7 @@ import { NUM_ROWS, SEATS_PER_ROW } from './Constants';
 export default function Scanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const {occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats} = route.params;
+  const {ws , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats} = route.params;
   console.log(occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
 
 
@@ -20,8 +20,9 @@ export default function Scanner({ route, navigation }) {
     })();
   }, []);
 
-  const press = (index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
-    claimSeat(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
+  const press = (ws , index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
+    console.log(ws);
+    claimSeat(ws , index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
     navigation.navigate("Seat Finder")
   }
 
@@ -58,7 +59,7 @@ export default function Scanner({ route, navigation }) {
       `Seat Number ${data} scanned`,
       "Do you want to claim this seat?",
       [
-        { text: "Claim", onPress: () => press(index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+        { text: "Claim", onPress: () => press(ws, index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
         { text: "Try Again", onPress: () => setScanned(false)}
       ]
     );
