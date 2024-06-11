@@ -57,12 +57,11 @@ const Reserve = ({ route, expoPushToken }) => {
   // navigation
   const navigation = useNavigation();
 
-  // websocket
+  // websocket - duplicated - need to remove duplication
   var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
 
 
   useEffect(() => {
-
     const connectWebSocket = () => {
       ws.onopen = () => {
         console.log("connected to server");
@@ -88,10 +87,7 @@ const Reserve = ({ route, expoPushToken }) => {
 
 
     }
-
     connectWebSocket();
-
-
     }, []
   )
 
@@ -153,12 +149,13 @@ const Reserve = ({ route, expoPushToken }) => {
         if (newTimers[selectedSeat] > 0) {
           newTimers[selectedSeat] -= 1;
           // for testing - send notification 5 seconds in
-          if (newTimers[selectedSeat] === 115) {
+          if (newTimers[selectedSeat] === 25) {
             sendPushNotification(expoPushToken, selectedSeat, newTimers[selectedSeat]);
           }
-          if (newTimers[selectedSeat] == 110) {
+          if (newTimers[selectedSeat] === 20) {
+            flagSeat(ws ,selectedSeat, flaggedSeats, setFlaggedSeats, setOccupiedSeats, setTimedWaitSeats);
             leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat);
-            //flagSeat(ws ,selectedSeat, flaggedSeats, setFlaggedSeats);
+
           }
         }
         return newTimers;

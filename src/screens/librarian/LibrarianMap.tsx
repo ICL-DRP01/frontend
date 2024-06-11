@@ -82,7 +82,6 @@ const LibrarianMap = ({ route }) => {
   const drawFooter = () => (
     <View>
       <Button label="Seat cleared" press={() => unflagSeat(ws, seat, flaggedSeats, setFlaggedSeats)} />
-      <Button label="Return" press={() => navigation.navigate("Flagged Seats List")} />
       <Button label="Ignore flag" press={() => null} />
     </View>
   );

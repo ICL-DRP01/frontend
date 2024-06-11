@@ -30,9 +30,11 @@ const parseMessage = (message) => {
 };
 
 
-const flagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
+const flagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], setFlaggedSeats: Function, setOccupiedSeats: Function, setTimedWaitSeats : Function) => {
     if (!flaggedSeats.includes(index)) {
         ws.send("flag " + index);
+//         ws.send("unbreak " + index);
+//         ws.send("unbook " + index);
         ws.onmessage = (e) => {
            console.log(e.data);
             if (e.data.startsWith("error")) {
@@ -41,7 +43,8 @@ const flagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], s
 
             } else {
                 const result = parseMessage(e.data);
-                setFlaggedSeats([...flaggedSeats, index]);
+                setFlaggedSeats(result.flagged);
+
             }
         };
     }
@@ -51,6 +54,8 @@ const flagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], s
 const unflagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
     if (!flaggedSeats.includes(index)) {
         ws.send("unflag " + index);
+        ws.send("unbreak " + index);
+        ws.send("unbook " + index);  // maybe move it later
         ws.onmessage = (e) => {
            console.log(e.data);
             if (e.data.startsWith("error")) {
@@ -175,7 +180,7 @@ const breakSeat = async (
         } else {
             const result = parseMessage(e.data);
             setTimedWaitSeats([...timedWaitSeats, index]);
-            setTimer({ ...timer, [index]: 120 });
+            setTimer({ ...timer, [index]: 30 });
         }
 
 

@@ -12,8 +12,8 @@ const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats
   const isInTimedWait = timedWaitSeats.includes(index);
   const isDisabled = (selectedSeat !== null && selectedSeat !== index) ||
                      (occupied && selectedSeat !== index) ||
-                     (isInTimedWait && selectedSeat !== index) ||
-                      (!occupied && selectedSeat !== index); // comment out this line to enable buttons
+                     (isInTimedWait && selectedSeat !== index)
+//                       (!occupied && selectedSeat !== index); // comment out this line to enable buttons
   const isFlagged = flaggedSeats.includes(index);
   const isSelected = selectedSeat === index;
 
@@ -32,6 +32,7 @@ const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats
         !occupied && !isInTimedWait && styles.freeSeat,
         isInTimedWait && styles.timedWaitSeat,
         selectedSeat !== null && !isSelected && styles.disabledSeat,
+        isFlagged && styles.freeSeat
 
       ]}
       onPress={() => !isDisabled && handlePress(index)}
