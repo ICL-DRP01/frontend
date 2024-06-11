@@ -4,7 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Reserve from './src/screens/Reserve';
 import Scanner from './src/screens/Scanner';
 import Selector from './src/screens/Selector';
-import Librarian from './src/screens/Librarian';
+import LibrarianMap from './src/screens/librarian/LibrarianMap';
+import LibrarianList from './src/screens/librarian/LibrarianList';
 
 // to not show deprecated warnings in the app - barcode - or update it - comment out when testing
 // import { LogBox } from 'react-native';
@@ -16,7 +17,6 @@ import { Text, View, Button, Platform, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import FreeSeatList from './src/screens/FreeSeatList';
 
 const Stack = createStackNavigator();
 
@@ -118,7 +118,8 @@ const App = () => {
           {props => <Reserve {...props} expoPushToken={expoPushToken} />}
         </Stack.Screen>
         <Stack.Screen name="Scanner" component={Scanner} />
-        <Stack.Screen name="FreeSeatList" component={FreeSeatList} />
+        <Stack.Screen name="Flagged Seats List" component={LibrarianList} />
+        <Stack.Screen name="Librarian Map" component={LibrarianMap} />
       </Stack.Navigator>
     </NavigationContainer>
   );

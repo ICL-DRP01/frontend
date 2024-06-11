@@ -1,14 +1,18 @@
-import {FlatList, Text, View } from "react-native"
-import styles from "./Styles"
+import { FlatList, Text, View } from "react-native"
 import { useEffect, useState } from "react";
-import Button from './Button'
-import { flagSeat, unflagSeat } from "./SeatManagement";
+import { useNavigation } from "@react-navigation/native";
+
 import FreeSeatMap from "./FreeSeatMap";
+import Button from '../Button'
+import styles from "../Styles"
+import { flagSeat, unflagSeat } from "../SeatManagement";
+import { FLAG_API } from "../Constants";
 
-const FLAG_API = "https://libraryseat-62c310e5e91e.herokuapp.com/flag";
-
-const FreeSeatList = () => {
+const LibrarianList = () => {
   const [flaggedSeats, setFlaggedSeats] = useState<number[]>([])
+
+  const navigation = useNavigation();
+
   useEffect(() => {
     const fetchToFlaggedSeats = async () => {
       try {
@@ -26,17 +30,19 @@ const FreeSeatList = () => {
     };
     fetchToFlaggedSeats();
   }, []);
+
   return (
-    <View style = {styles.container}>
-      <View style = {styles.list}>
+    <View style={styles.container}>
+      <View style={styles.list}>
         {
           flaggedSeats.map((seat) => (
-            <Button label={`Seat number ${seat}`} press={() => FreeSeatMap(seat)}/>
+            <Button label={`Seat number ${seat}`} press={() => FreeSeatMap(seat)} />
           ))
         }
       </View>
+      <Button label="(test) goto map" press={() => navigation.navigate("Librarian Map")} />
     </View>
   )
 }
 
-export default FreeSeatList
+export default LibrarianList
