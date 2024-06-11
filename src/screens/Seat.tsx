@@ -4,8 +4,7 @@ import { Text, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import styles from './Styles';
 import { scale } from 'react-native-size-matters';
-
-const COMPUTER_SEATS = [0,1,2,3,4]; // positions of computer seats
+import { COMPUTER_SEATS } from './Constants';
 
 const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats, handlePress, timer }) => {
   const seatType = COMPUTER_SEATS.includes(index) ? 'computer' : 'regular';

@@ -12,14 +12,7 @@ import QRButton from './QRButton'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 import SeatInfo from './SeatInfo';
 import Scanner from './Scanner'
-
-const NUM_ROWS = 6;
-const SEATS_PER_ROW = 5;
-const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/"; // duplicated - maybe constants file
-
-const BREAK_SEATS = [0, 9, 29];
-const DURATION = 1000; // minutes for now
-
+import { NUM_ROWS, SEATS_PER_ROW, OCCUPIED_API, BREAK_SEATS, DURATION } from './Constants';
 
 async function sendPushNotification(expoPushToken: string, seatNumber: number, timeRemaining: number) {
 

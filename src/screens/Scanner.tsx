@@ -4,9 +4,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
 
 import { claimSeat } from './SeatManagement';
-
-const NUM_ROWS = 6;
-const SEATS_PER_ROW = 5;
+import { NUM_ROWS, SEATS_PER_ROW } from './Constants';
 
 export default function Scanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);

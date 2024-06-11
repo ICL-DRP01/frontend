@@ -1,10 +1,5 @@
 import { Alert } from 'react-native';
-
-const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
-const CLAIM_API = "https://libraryseat-62c310e5e91e.herokuapp.com/claim";
-const LEAVE_API = "https://libraryseat-62c310e5e91e.herokuapp.com/leave"
-const BREAK_API = "https://libraryseat-62c310e5e91e.herokuapp.com/break"
-const UNBREAK_API = "https://libraryseat-62c310e5e91e.herokuapp.com/unbreak"
+import { OCCUPIED_API, CLAIM_API, LEAVE_API, BREAK_API, UNBREAK_API } from './Constants'
 
 const flagSeat = (index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
     if (!flaggedSeats.includes(index))

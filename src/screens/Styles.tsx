@@ -1,4 +1,3 @@
-
 import { StyleSheet } from 'react-native';
 import { scale,  moderateScale } from 'react-native-size-matters';
 import { PRIMARY_COLOUR, SECONDARY_COLOUR } from './Constants.ts';
