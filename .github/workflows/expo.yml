@@ -8,11 +8,6 @@ jobs:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
 
-      - name: 🏗 Initialising google-services.json
-        env:
-          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $DATA > ${{ github.workspace }}/google-services.json
-
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:

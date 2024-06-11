@@ -3,15 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Reserve from './src/screens/Reserve';
 import Scanner from './src/screens/Scanner';
+import Selector from './src/screens/Selector';
+import Librarian from './src/screens/Librarian';
 
 // to not show deprecated warnings in the app - barcode - or update it - comment out when testing
 // import { LogBox } from 'react-native';
 //
 // LogBox.ignoreAllLogs(true);
-
-
-
-
 
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform, Alert } from 'react-native';
@@ -69,7 +67,7 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-//       console.log(pushTokenString);
+      //       console.log(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);
@@ -112,12 +110,15 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="FreeSeatList" component={FreeSeatList} />
-          <Stack.Screen name="Seat Finder">
-            {props => <Reserve {...props} expoPushToken={expoPushToken} />}
-          </Stack.Screen>
-         <Stack.Screen name="Scanner" component={Scanner} />
+      <Stack.Navigator>
+        <Stack.Screen name="Selector">
+          {props => <Selector {...props} expoPushToken={expoPushToken} />}
+        </Stack.Screen>
+        <Stack.Screen name="Seat Finder">
+          {props => <Reserve {...props} expoPushToken={expoPushToken} />}
+        </Stack.Screen>
+        <Stack.Screen name="Scanner" component={Scanner} />
+        <Stack.Screen name="FreeSeatList" component={FreeSeatList} />
       </Stack.Navigator>
     </NavigationContainer>
   );

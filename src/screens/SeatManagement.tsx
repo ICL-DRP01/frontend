@@ -1,10 +1,5 @@
 import { Alert } from 'react-native';
-
-const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/";
-const CLAIM_API = "https://libraryseat-62c310e5e91e.herokuapp.com/claim";
-const LEAVE_API = "https://libraryseat-62c310e5e91e.herokuapp.com/leave";
-const FLAG_API = "https://libraryseat-62c310e5e91e.herokuapp.com/flag";
-const UNFLAG_API = "https://libraryseat-62c310e5e91e.herokuapp.com/unflag";
+import { OCCUPIED_API, CLAIM_API, LEAVE_API, BREAK_API, UNBREAK_API } from './Constants'
 
 const flagSeat = async (index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
     if (!flaggedSeats.includes(index)) {
@@ -14,7 +9,7 @@ const flagSeat = async (index: number, flaggedSeats: number[], setFlaggedSeats: 
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({seat_number: index.toString()}),
+                body: JSON.stringify({ seat_number: index.toString() }),
             });
             if (response.ok) {
                 setFlaggedSeats([...flaggedSeats, index]);
@@ -37,7 +32,7 @@ const unflagSeat = async (index: number, flaggedSeats: number[], setFlaggedSeats
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({seat_number: index.toString()}),
+                body: JSON.stringify({ seat_number: index.toString() }),
             });
             if (response.ok) {
                 const updatedResponse = await fetch(FLAG_API);
@@ -66,6 +61,21 @@ const claimSeat = async (
     setTimedWaitSeats: Function
 ) => {
     if (occupiedSeats.includes(index)) {
+        try {
+            const response = await fetch(UNBREAK_API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ seat_number: index.toString() }),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to unbreak seat');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'An error occurred while unbreaking the seat.');
+        }
         setTimedWaitSeats(timedWaitSeats.filter(seat => seat !== index));
         setSelectedSeat(index); // Select the seat
         return;
@@ -138,7 +148,7 @@ const leaveSeat = async (
     }
 };
 
-const breakSeat = (
+const breakSeat = async (
     index: number,
     timedWaitSeats: number[],
     setTimedWaitSeats: Function,
@@ -147,6 +157,26 @@ const breakSeat = (
 ) => {
     setTimedWaitSeats([...timedWaitSeats, index]);
     setTimer({ ...timer, [index]: 120 }); // 2 minutes = 120 seconds
+
+    try {
+        const response = await fetch(BREAK_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ seat_number: index.toString() }),
+        });
+        if (response.ok) {
+            setTimedWaitSeats([...timedWaitSeats, index]);
+            setTimer({ ...timer, [index]: 120 }); // 2 minutes = 120 seconds
+        } else {
+            Alert.alert('Error', 'Failed to break seat.');
+        }
+
+    } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'An error occurred while breaking the seat.');
+    }
 };
 
 export { flagSeat, unflagSeat, claimSeat, leaveSeat, breakSeat };

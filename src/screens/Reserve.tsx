@@ -12,14 +12,7 @@ import QRButton from './QRButton'
 import { flagSeat, claimSeat, leaveSeat, breakSeat } from './SeatManagement';
 import SeatInfo from './SeatInfo';
 import Scanner from './Scanner'
-
-const NUM_ROWS = 6;
-const SEATS_PER_ROW = 5;
-const OCCUPIED_API = "https://libraryseat-62c310e5e91e.herokuapp.com/"; // duplicated - maybe constants file
-
-const BREAK_SEATS = [0, 9, 29];
-const DURATION = 1000; // minutes for now
-
+import { NUM_ROWS, SEATS_PER_ROW, OCCUPIED_API, BREAK_SEATS, DURATION } from './Constants';
 
 async function sendPushNotification(expoPushToken: string, seatNumber: number, timeRemaining: number) {
 
@@ -75,6 +68,8 @@ const Reserve = ({ route, expoPushToken }) => {
         const occupied = data.results.map(item => parseInt(item.seat_number));
         console.log(occupied);
         setOccupiedSeats(occupied);
+        const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
+        setTimedWaitSeats(breakSeats);
       } catch (err) {
         console.log(err);
       }
@@ -118,10 +113,13 @@ const Reserve = ({ route, expoPushToken }) => {
     }
   };
 
-  const loadCamera = () => {
+  // Start of JSX code
 
+  const hasSeat = () => selectedSeat !== null;
+  const awayFromDesk = () => hasSeat() && timedWaitSeats.includes(selectedSeat);
+
+  const navToCamera = () => {
     console.log("Loading camera");
-//     occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats
     navigation.navigate("Scanner", {
       occupiedSeats : occupiedSeats,
       timedWaitSeats : timedWaitSeats,
@@ -129,65 +127,73 @@ const Reserve = ({ route, expoPushToken }) => {
       setSelectedSeat : setSelectedSeat,
       setTimedWaitSeats : setTimedWaitSeats,
     });
-
-
-
   };
+
+  const drawSeat = ( index ) => (
+    <Seat
+      index={index}
+      selectedSeat={selectedSeat}
+      timedWaitSeats={timedWaitSeats}
+      occupiedSeats={occupiedSeats}
+      flaggedSeats={flaggedSeats}
+      handlePress={handlePress}
+      timer={timer}
+    />
+  );
+
+  const drawTimer = () => (
+    awayFromDesk()
+      ? <Timer remainingTime={timer[selectedSeat]} />
+      : <Text style={styles.timerText} />
+  );
+
+  const drawLeaveButton = () => (
+    <Button
+      label="Leave your seat"
+      press={ () => leaveSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat) }
+    />
+  );
+
+  const drawBreakButton = () => (
+    awayFromDesk()
+      ? <Button label={"Return from break"} press={() => claimSeat(selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)} />
+      : <Button label={"Take a break"} press={() => breakSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)} />
+  )
+
+  // Top-Level JSX
+
+  const drawHeader = () => (<>
+    <Text style={styles.title}>Scan Your Seat</Text>
+    <Text style={styles.selectedSeatText}>
+      {hasSeat() ? `Selected Seat: ${selectedSeat}` : ""}
+    </Text>
+  </>);
+
+  const drawMap = () => (<>
+    {SeatInfo()}
+    <FlatList
+      data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
+      renderItem={({ index }) => drawSeat(index)}
+      keyExtractor={(item, index) => index.toString()}
+      numColumns={SEATS_PER_ROW}
+    />
+  </>);
+
+  const drawFooter = () => (
+    hasSeat()
+      ? <View>
+          {drawTimer()}
+          {drawLeaveButton()}
+          {drawBreakButton()}
+        </View>
+      : <QRButton press={() => navToCamera()} />
+  );
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-          <Text style={styles.title}>Scan Your Seat</Text>
-          <Text style={styles.selectedSeatText}>
-            {selectedSeat !== null ? `Selected Seat: ${selectedSeat}` : ""}
-          </Text>
-      </View>
-
-      {/* Map */}
-      <View style={styles.map}>
-        {SeatInfo()}
-        <FlatList
-          data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
-          renderItem={({ index }) => (
-            <Seat
-              index={index}
-              selectedSeat={selectedSeat}
-              timedWaitSeats={timedWaitSeats}
-              occupiedSeats={occupiedSeats}
-              flaggedSeats={flaggedSeats}
-              handlePress={handlePress}
-              timer={timer}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={SEATS_PER_ROW}
-        />
-
-      </View>
-
-      {/* Footer */}
-      <View style={styles.footer}>
-        { selectedSeat === null
-          ? <QRButton press={() => loadCamera()} />
-          : <View>
-               {selectedSeat !== null && timedWaitSeats.includes(selectedSeat)
-                  ? <Timer remainingTime={timer[selectedSeat]} />
-                  : <Text style={styles.timerText} />
-               }
-              <Button label="Leave your seat" press={() => leaveSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat)}/>
-              <Button
-               label={
-                 timedWaitSeats.includes(selectedSeat)
-                   ? "Return from break"
-                   : "Take a break"}
-               press={
-                 timedWaitSeats.includes(selectedSeat)
-                  ? () => claimSeat(selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
-                  : () => breakSeat(selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)}/>
-            </View>
-          }
-      </View>
+      <View style={styles.header}>{drawHeader()}</View>
+      <View style={styles.map}>{drawMap()}</View>
+      <View style={styles.footer}>{drawFooter()}</View>
     </View>
   );
 };
