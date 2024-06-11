@@ -14,10 +14,11 @@ import Scanner from './src/screens/Scanner';
 
 
 import { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, Platform } from 'react-native';
+import { Text, View, Button, Platform, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import FreeSeatList from './src/screens/FreeSeatList';
 
 const Stack = createStackNavigator();
 
@@ -32,7 +33,7 @@ Notifications.setNotificationHandler({
 
 
 function handleRegistrationError(errorMessage: string) {
-  alert(errorMessage);
+  Alert.alert(errorMessage);
   throw new Error(errorMessage);
 }
 
@@ -112,6 +113,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="FreeSeatList" component={FreeSeatList} />
           <Stack.Screen name="Seat Finder">
             {props => <Reserve {...props} expoPushToken={expoPushToken} />}
           </Stack.Screen>

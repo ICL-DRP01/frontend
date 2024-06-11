@@ -4,7 +4,7 @@ const SeatInfo = () => {
     return (
         <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
             <View style={{width: 20, height: 20, backgroundColor: '#173d70', borderRadius: 5}} />
-            <Text> Occupied  </Text>
+            <Text> Hkjkj  </Text>
 
             <View style={{width: 20, height: 20, backgroundColor: 'white', borderColor: '#173d70', borderRadius: 5, borderWidth: 3}} />
             <Text> Vacant  </Text>
