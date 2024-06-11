@@ -1,6 +1,7 @@
 
 import { StyleSheet } from 'react-native';
 import { scale,  moderateScale } from 'react-native-size-matters';
+import { PRIMARY_COLOUR, SECONDARY_COLOUR } from './Constants.ts';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,17 +48,17 @@ const styles = StyleSheet.create({
   },
   freeSeat: {
     backgroundColor: 'white',
-    borderColor: '#173d70',
+    borderColor: PRIMARY_COLOUR,
     borderWidth: 3,
   },
   computerSeat: {
     backgroundColor: '#1AB502', // Color for computer seats
   },
   occupied: {
-    backgroundColor: '#173d70', // Color for occupied
+    backgroundColor: PRIMARY_COLOUR, // Color for occupied
   },
   timedWaitSeat: {
-    backgroundColor: '#7aaaff', // Color for seats in timed wait state
+    backgroundColor: SECONDARY_COLOUR, // Color for seats in timed wait state
   },
   disabledSeat: {
     opacity: 0.5, // Make disabled seats semi-transparent
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   freeSeatText: {
     fontWeight: 'bold',
-    color: '#173d70',
+    color: PRIMARY_COLOUR,
   },
   timerText: {
     color: 'black',

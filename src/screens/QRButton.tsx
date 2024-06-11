@@ -1,4 +1,5 @@
 import { StyleSheet, View, Pressable, Text, Image } from 'react-native';
+import { PRIMARY_COLOUR } from './Constants.ts';
 
 export default function QRButton({ press }) {
   return (
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    backgroundColor: '#173d70'
+    backgroundColor: PRIMARY_COLOUR
   },
   text: {
     color: 'white',

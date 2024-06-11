@@ -1,4 +1,5 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { PRIMARY_COLOUR } from './Constants.ts';
 
 export default function Button({ label, press }) {
   return (
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    backgroundColor: 'grey'
+    backgroundColor: PRIMARY_COLOUR
   },
   text: {
     color: 'white',
