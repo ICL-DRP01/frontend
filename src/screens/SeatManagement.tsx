@@ -43,27 +43,7 @@ const flagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], s
                 const result = parseMessage(e.data);
                 setFlaggedSeats([...flaggedSeats, index]);
             }
-
         };
-
-
-//         try {
-//             const response = await fetch(FLAG_API, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ seat_number: index.toString() }),
-//             });
-//             if (response.ok) {
-//                 setFlaggedSeats([...flaggedSeats, index]);
-//             } else {
-//                 Alert.alert('Error', 'Failed to flag seat.');
-//             }
-//         } catch (error) {
-//             console.error(error);
-//             Alert.alert('Error', 'An error occurred while flagging the seat.');
-//         }
     }
     console.log(flaggedSeats);
 };
@@ -84,30 +64,6 @@ const unflagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[],
             }
 
         };
-
-//         try {
-//             const response = await fetch(UNFLAG_API, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ seat_number: index.toString() }),
-//             });
-//             if (response.ok) {
-//                 const updatedResponse = await fetch(FLAG_API);
-//                 if (!updatedResponse.ok) {
-//                     throw new Error('Failed to get updated flagged seats');
-//                 }
-//                 const data = await updatedResponse.json();
-//                 const updated = data.results.map(item => parseInt(item.seatNumber));
-//                 setFlaggedSeats(updated);
-//             } else {
-//                 Alert.alert('Error', 'Failed to unflag seat.');
-//             }
-//         } catch (error) {
-//             console.error(error);
-//             Alert.alert('Error', 'An error occurred while unflagging the seat.');
-//         }
     }
 };
 
@@ -195,32 +151,6 @@ const leaveSeat = async (
                 setSelectedSeat(null);
             }
         };
-
-//         try {
-//             const response = await fetch(LEAVE_API, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ seat_number: index.toString() }),
-//             });
-//             if (response.ok) {
-//                 // Fetch updated list of occupied seats
-//                 const updatedResponse = await fetch(OCCUPIED_API);
-//                 if (!updatedResponse.ok) {
-//                     throw new Error('Failed to fetch updated occupied seats');
-//                 }
-//                 const data = await updatedResponse.json();
-//                 const updated = data.results.map(item => parseInt(item.seat_number));
-//                 setOccupiedSeats(updated);
-//                 setSelectedSeat(null);  // Reset selected seat
-//             } else {
-//                 Alert.alert('Error', 'Failed to leave seat.');
-//             }
-//         } catch (error) {
-//             console.error(error);
-//             Alert.alert('Error', 'An error occurred while claiming the seat.');
-//         }
     }
 };
 
@@ -239,7 +169,7 @@ const breakSeat = async (
     ws.onmessage = (e) => {
        console.log(e.data);
         if (e.data.startsWith("error")) {
-          alert.alert('Error', 'Failed to break seat.');
+          Alert.alert('Error', 'Failed to break seat.');
           console.log("ERROR");
 
         } else {
@@ -250,26 +180,6 @@ const breakSeat = async (
 
 
     };
-
-//     try {
-//         const response = await fetch(BREAK_API, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({ seat_number: index.toString() }),
-//         });
-//         if (response.ok) {
-//             setTimedWaitSeats([...timedWaitSeats, index]);
-//             setTimer({ ...timer, [index]: 120 }); // 2 minutes = 120 seconds
-//         } else {
-//             Alert.alert('Error', 'Failed to break seat.');
-//         }
-//
-//     } catch (error) {
-//         console.error(error);
-//         Alert.alert('Error', 'An error occurred while breaking the seat.');
-//     }
 };
 
 

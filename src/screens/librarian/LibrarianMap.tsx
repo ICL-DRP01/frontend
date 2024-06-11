@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, FlatList, } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -6,6 +6,7 @@ import styles from '../Styles'
 import Seat from '../Seat'
 import Button from '../Button'
 import { NUM_ROWS, SEATS_PER_ROW, OCCUPIED_API, BREAK_SEATS, PRIMARY_COLOUR, FLAGGED_SEATS } from '../Constants';
+import { unflagSeat } from '../SeatManagement';
 
 const LibrarianMap = ({ route }) => {
   const { seat } = route.params;
@@ -38,6 +39,10 @@ const LibrarianMap = ({ route }) => {
     fetchOccupiedSeats();
   }, []);
 
+  
+  // websocket
+  var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
+  
   // Start of JSX code
 
   const drawSeat = (index) => (
@@ -76,7 +81,8 @@ const LibrarianMap = ({ route }) => {
 
   const drawFooter = () => (
     <View>
-      <Button label="Seat cleared" press={() => null} />
+      <Button label="Seat cleared" press={() => unflagSeat(ws, seat, flaggedSeats, setFlaggedSeats)} />
+      <Button label="Return" press={() => navigation.navigate("Flagged Seats List")} />
       <Button label="Ignore flag" press={() => null} />
     </View>
   );
