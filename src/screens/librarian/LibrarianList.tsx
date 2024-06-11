@@ -1,15 +1,14 @@
-import { FlatList, Text, View } from "react-native"
+import { Text, View } from "react-native";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
-import FreeSeatMap from "./FreeSeatMap";
-import Button from '../Button'
-import styles from "../Styles"
-import { flagSeat, unflagSeat } from "../SeatManagement";
-import { FLAG_API } from "../Constants";
+import Button from '../Button';
+import styles from "../Styles";
+import { FLAG_API, FLAGGED_SEATS } from "../Constants";
 
 const LibrarianList = () => {
-  const [flaggedSeats, setFlaggedSeats] = useState<number[]>([])
+  const [_, setFlaggedSeats] = useState<number[]>([]);
+  let flaggedSeats = FLAGGED_SEATS; // TODO: Remove when API done
 
   const navigation = useNavigation();
 
@@ -33,14 +32,15 @@ const LibrarianList = () => {
 
   return (
     <View style={styles.container}>
+      <Text>Select a flagged seat to go clear</Text>
       <View style={styles.list}>
         {
           flaggedSeats.map((seat) => (
-            <Button label={`Seat number ${seat}`} press={() => FreeSeatMap(seat)} />
+            <Button label={`Seat #${seat}`} press={() => navigation.navigate("Librarian Map", { seat })} />
           ))
         }
       </View>
-      <Button label="(test) goto map" press={() => navigation.navigate("Librarian Map")} />
+      {/* <Button label="(test) goto map" press={() => navigation.navigate("Librarian Map")} /> */}
     </View>
   )
 }

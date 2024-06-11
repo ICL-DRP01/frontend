@@ -5,18 +5,15 @@ import { useNavigation } from '@react-navigation/native';
 import styles from '../Styles'
 import Seat from '../Seat'
 import Button from '../Button'
-import { claimSeat, leaveSeat, breakSeat } from '../SeatManagement';
-import { NUM_ROWS, SEATS_PER_ROW, OCCUPIED_API, BREAK_SEATS } from '../Constants';
+import { NUM_ROWS, SEATS_PER_ROW, OCCUPIED_API, BREAK_SEATS, PRIMARY_COLOUR, FLAGGED_SEATS } from '../Constants';
 
-const LibrarianMap = () => {
-  const toClear = 6; // TODO: make param
+const LibrarianMap = ({ route }) => {
+  const { seat } = route.params;
 
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
   const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>(BREAK_SEATS); // Track seats in timed wait state
-  const [selectedSeat, setSelectedSeat] = useState<number | null>(null) // currently selected seat
-  const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
-
-  const [timer, setTimer] = useState<{ [key: number]: number }>({}); // Timer state for seats
+  const [_, setFlaggedSeats] = useState<number[]>([]);
+  let flaggedSeats = FLAGGED_SEATS; // TODO: Remove when API done
 
   const navigation = useNavigation();
 
@@ -46,25 +43,25 @@ const LibrarianMap = () => {
   const drawSeat = (index) => (
     <Seat
       index={index}
-      selectedSeat={selectedSeat}
-      timedWaitSeats={timedWaitSeats}
-      occupiedSeats={occupiedSeats}
-      flaggedSeats={flaggedSeats}
+      selectedSeat={seat}
+      timedWaitSeats={[]}
+      occupiedSeats={flaggedSeats}
+      flaggedSeats={[]}
       handlePress={() => null}
-      timer={timer}
     />
   );
 
   const drawKey = () => (
-    <Text>TODO key</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: 20, height: 20, backgroundColor: PRIMARY_COLOUR, borderRadius: 5 }} />
+      <Text style={{ marginLeft: 5 }}>Flagged seat</Text>
+    </View>
   );
 
   // Top-Level JSX
 
   const drawHeader = () => (
-    <Text style={styles.title}>
-      Clear seat {toClear}
-    </Text>
+    <Text style={styles.title}>Clear seat {seat}</Text>
   );
 
   const drawMap = () => (<>
@@ -79,7 +76,7 @@ const LibrarianMap = () => {
 
   const drawFooter = () => (
     <View>
-      <Button label="Free seat" press={() => null} />
+      <Button label="Seat cleared" press={() => null} />
       <Button label="Ignore flag" press={() => null} />
     </View>
   );
