@@ -32,15 +32,13 @@ const Seat = ({ index, selectedSeat, timedWaitSeats, occupiedSeats, flaggedSeats
         !occupied && !isInTimedWait && styles.freeSeat,
         isInTimedWait && styles.timedWaitSeat,
         selectedSeat !== null && !isSelected && styles.disabledSeat,
-        isFlagged && styles.freeSeat
+
 
       ]}
       onPress={() => !isDisabled && handlePress(index)}
               disabled={isDisabled}
     >
-      {isFlagged && (
-        <MaterialIcons name="flag" size={20} color="black"/>
-      )}
+
       {seatType === 'computer' ? (
         <>
           <Ionicons name="laptop-outline" size={scale(17)} style={textStyle()} />

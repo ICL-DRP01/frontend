@@ -4,14 +4,13 @@ import { useNavigation } from "@react-navigation/native";
 
 import Button from '../Button';
 import styles from "../Styles";
-import { FLAG_API, FLAGGED_SEATS } from "../Constants";
+import { FLAG_API } from "../Constants";
 
 const LibrarianList = () => {
-//   const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
-//   let flaggedSeats = FLAGGED_SEATS; // TODO: Remove when API done
+  const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
+  //flaggedSeats = FLAGGED_SEATS; // TODO: Remove when API done
 
   const navigation = useNavigation();
-  let flaggedSeats;
 
   // duplicated need to fix
   var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
@@ -36,7 +35,6 @@ const LibrarianList = () => {
         const result = parseMessage(e.data);
 
         setFlaggedSeats(result.flagged);
-        flaggedSeats = result.flagged;
         console.log(result.flagged);
 
       };

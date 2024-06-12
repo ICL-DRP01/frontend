@@ -52,7 +52,8 @@ const flagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], s
 };
 
 const unflagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[], setFlaggedSeats: Function) => {
-    if (!flaggedSeats.includes(index)) {
+    console.log("unflag seat")
+    if (flaggedSeats.includes(index)) {
         ws.send("unflag " + index);
         ws.send("unbreak " + index);
         ws.send("unbook " + index);  // maybe move it later

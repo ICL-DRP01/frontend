@@ -11,37 +11,76 @@ import { unflagSeat } from '../SeatManagement';
 const LibrarianMap = ({ route }) => {
   const { seat } = route.params;
 
-  const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
-  const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>(BREAK_SEATS); // Track seats in timed wait state
-  const [_, setFlaggedSeats] = useState<number[]>([]);
-  let flaggedSeats = FLAGGED_SEATS; // TODO: Remove when API done
+  // new web socket - get warning if passed and
+  var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
+
+
+  const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
 
   const navigation = useNavigation();
 
+  // duplicate - remove when refactoring
+  const parseMessage = (message) => {
+        const result = {
+          booked: [],
+          flagged: [],
+          break: []
+        };
+
+        const bookedMatch = message.match(/booked: \{([^\}]*)\}/);
+        const flaggedMatch = message.match(/flagged: \{([^\}]*)\}/);
+        const breakMatch = message.match(/break: \{([^\}]*)\}/);
+
+        if (bookedMatch && bookedMatch[1]) {
+          result.booked = bookedMatch[1].split(', ').map(Number);
+        }
+
+        if (flaggedMatch && flaggedMatch[1]) {
+          result.flagged = flaggedMatch[1].split(', ').map(Number);
+        }
+
+        if (breakMatch && breakMatch[1]) {
+          result.break = breakMatch[1].split(', ').map(Number);
+        }
+
+        return result;
+      };
+
+
   // API call to fetch occupiedSeats
   useEffect(() => {
-    const fetchOccupiedSeats = async () => {
-      try {
-        const response = await fetch(OCCUPIED_API);
-        if (!response.ok) {
-          throw new Error('Failed to fetch occupied seats');
-        }
-        const data = await response.json(); // what we get form the API
-        const occupied = data.results.map(item => parseInt(item.seat_number));
-        console.log(occupied);
-        setOccupiedSeats(occupied);
-        const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
-        setTimedWaitSeats(breakSeats);
-      } catch (err) {
-        console.log(err);
-      }
+    const fetchBreakSeats = async () => {
+         ws.onmessage = (e) => {
+           console.log(e.data);
+
+           const result = parseMessage(e.data);
+
+           setFlaggedSeats(result.flagged);
+           console.log(result.flagged);
+
+         };
+
+         // doesn't the librarian only care about flagged seats??
+         // do we need to show seats on break as well??
+//       try {
+//         const response = await fetch(OCCUPIED_API);
+//         if (!response.ok) {
+//           throw new Error('Failed to fetch occupied seats');
+//         }
+//         const data = await response.json(); // what we get form the API
+//         const occupied = data.results.map(item => parseInt(item.seat_number));
+//         console.log(occupied);
+//         setOccupiedSeats(occupied);
+//         const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
+//         setTimedWaitSeats(breakSeats);
+//       } catch (err) {
+//         console.log(err);
+//       }
     };
-    fetchOccupiedSeats();
+    fetchBreakSeats();
   }, []);
 
-  
-  // websocket
-  var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
+
   
   // Start of JSX code
 
