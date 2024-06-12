@@ -6,9 +6,11 @@ import Button from '../Button';
 import styles from "../Styles";
 import { FLAG_API } from "../Constants";
 
-const LibrarianList = () => {
+export default function LibrarianList(){
+
+
   const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
-  //flaggedSeats = FLAGGED_SEATS; // TODO: Remove when API done
+
 
   const navigation = useNavigation();
 
@@ -73,36 +75,21 @@ const LibrarianList = () => {
     };
 
 
-//   useEffect(() => {
-//     const fetchToFlaggedSeats = async () => {
-//       try {
-//         const response = await fetch(FLAG_API);
-//         if (!response.ok) {
-//           throw new Error('Failed to fetch occupied seats');
-//         }
-//         const data = await response.json(); // what we get form the API
-//         const flagged = data.results.map(seat => parseInt(seat.seat_number));
-//         console.log(flagged);
-//         setFlaggedSeats(flagged);
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     };
-//     fetchToFlaggedSeats();
-//   }, []);
-
   return (
+    // texts can be better formatted
     <View style={styles.container}>
-      <Text>Select a flagged seat to go clear</Text>
-      <View style={styles.list}>
-        {
-          flaggedSeats.map((seat) => (
-            <Button label={`Seat #${seat}`} press={() => navigation.navigate("Librarian Map", { seat })} />
-          ))
-        }
+        <Text>Select a flagged seat to clear</Text>
+        {flaggedSeats.length > 0 ? (
+          <View style={styles.list}>
+            {flaggedSeats.map((seat) => (
+              <Button key={seat} label={`Seat #${seat}`} press={() => navigation.navigate("Librarian Map", { seat })} />
+            ))}
+          </View>
+        ) : (
+          <Text>No seats to clear</Text>
+        )}
       </View>
-      {/* <Button label="(test) goto map" press={() => navigation.navigate("Librarian Map")} /> */}
-    </View>
+
   )
 }
 

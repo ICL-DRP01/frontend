@@ -38,10 +38,14 @@ async function sendPushNotification(expoPushToken: string, seatNumber: number, t
 }
 
 
-const Reserve = ({ route, expoPushToken }) => {
-//   const { expoPushToken } = route.params;
-//   const [expoToken, setExpoPushToken] = useState<string | null>(expoPushToken);
-  console.log("Token is: " + expoPushToken)
+export default function Reserve  ({ route, navigation }) {
+
+
+
+  const { expoPushToken} = route.params;
+//   console.log(expoPushToken);
+
+
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
   // the seats that are on break
   const [timedWaitSeats, setTimedWaitSeats] = useState<number[]>(BREAK_SEATS); // Track seats in timed wait state
@@ -55,7 +59,7 @@ const Reserve = ({ route, expoPushToken }) => {
   const [timer, setTimer] = useState<{ [key: number]: number }>({}); // Timer state for seats
 
   // navigation
-  const navigation = useNavigation();
+//   const navigation = useNavigation();
 
   // websocket - duplicated - need to remove duplication
   var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
@@ -180,9 +184,34 @@ const Reserve = ({ route, expoPushToken }) => {
 
   // Start of JSX code
 
-  const hasSeat = () => selectedSeat !== null;
+  const hasSeat = () => selectedSeat !== null || occupiedSeats.includes(selectedSeat);
   const awayFromDesk = () => hasSeat() && timedWaitSeats.includes(selectedSeat);
   const isFlagged = () => selectedSeat !== null && flaggedSeats.includes(selectedSeat);
+  const isNowhere =  !occupiedSeats.includes(selectedSeat) && !flaggedSeats.includes(selectedSeat) && !timedWaitSeats.includes(selectedSeat);
+  const collectBelongings = selectedSeat !== null && isNowhere
+
+  useEffect(() => {
+//       console.log("clean up")
+//       console.log(selectedSeat);
+
+      ws.onmessage = (e) => {
+//         console.log(e.data);
+
+        const result = parseMessage(e.data);
+
+        setOccupiedSeats(result.booked);
+        setFlaggedSeats(result.flagged);
+        setTimedWaitSeats(result.break);
+
+      };
+
+//       if (selectedSeat !== null && isNowhere) {
+//         console.log("belongings collected")
+//
+//
+//       }
+
+   });
 
   const navToCamera = () => {
     console.log("Loading camera");
@@ -219,11 +248,11 @@ const Reserve = ({ route, expoPushToken }) => {
   const drawLeaveButton = () => (
     <Button
       label="Leave your seat"
-      press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, flaggedSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats) }
+      press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, flaggedSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats) }
     />
   );
 
-  const drawCollectButton = () => (
+  const drawResumeButton = () => (
 
         <>
         <Text style={styles.selectedSeatText}>Your seat is Flagged!</Text>
@@ -232,7 +261,7 @@ const Reserve = ({ route, expoPushToken }) => {
               label="Leave your seat"
               press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, flaggedSeats,  occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats) }
             />
-        <Button label={"Collect belongings"} press={() => null} />
+
         </>
 
   )
@@ -244,6 +273,12 @@ const Reserve = ({ route, expoPushToken }) => {
       ? <Button label={"Return from break"} press={() => claimSeat(ws , selectedSeat, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)} />
       : <Button label={"Take a break"} press={() => breakSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)} />
   )
+
+  const drawCollectedButton = () => (
+
+        <Button label={"collected belongings"} press={() =>  setSelectedSeat(null)} />
+
+    )
 
   // Top-Level JSX
 
@@ -264,23 +299,36 @@ const Reserve = ({ route, expoPushToken }) => {
     />
   </>);
 
-  const drawFooter = () => (
-    hasSeat() ? (
-      isFlagged() ? (
-        <View>
-          {drawCollectButton()}
-        </View>
-      ) : (
-        <View>
-          {drawTimer()}
-          {drawLeaveButton()}
-          {drawBreakButton()}
-        </View>
-      )
-    ) : (
-      <QRButton press={() => navToCamera()} />
-    )
-  );
+  const drawFooter = () => {
+    if (hasSeat()) {
+      if (isFlagged()) {
+        return (
+          <View>
+            {drawResumeButton()}
+          </View>
+        );
+      } else {
+        return (
+          <View>
+            {selectedSeat !== null && isNowhere ? drawCollectedButton() : (
+              <>
+                {drawTimer()}
+                {drawLeaveButton()}
+                {drawBreakButton()}
+              </>
+            )}
+          </View>
+        );
+      }
+    } else {
+      return (
+        <QRButton press={() => navToCamera()} />
+      );
+    }
+
+  };
+
+
 
 
   return (

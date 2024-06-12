@@ -67,9 +67,13 @@ const unflagSeat = async (ws : WebSocket, index: number, flaggedSeats: number[],
                 const result = parseMessage(e.data);
                 setFlaggedSeats(result.flagged);
 
+
+
             }
 
         };
+
+
     }
 };
 
@@ -103,6 +107,7 @@ const claimSeat = async (
 
             } else {
                 const result = parseMessage(e.data);
+                setOccupiedSeats(result.booked)
                 setTimedWaitSeats(result.break);
                 setFlaggedSeats(result.flagged)
                 setSelectedSeat(index)
@@ -136,13 +141,15 @@ const leaveSeat = async (
     ws : WebSocket,
     index: number,
     timedWaitSeats: number[],
-    flaggedSeats : number[],
     setTimedWaitSeats: Function,
+    flaggedSeats : number[],
     occupiedSeats: number[],
     setOccupiedSeats: Function,
     setSelectedSeat: Function,
     setFlaggedSeats : Function
 ) => {
+
+    setSelectedSeat(null);
 
 
     if (timedWaitSeats.includes(index)) {
@@ -155,8 +162,6 @@ const leaveSeat = async (
         setFlaggedSeats(flaggedSeats.filter(seat => seat !== index))
 
     }
-
-
 
     if (occupiedSeats.includes(index)) {
         ws.send("unbook " + index);
@@ -172,7 +177,7 @@ const leaveSeat = async (
                 setFlaggedSeats(result.flagged);
                 setTimedWaitSeats(result.break);
                 console.log("unsetting seat!")
-                setSelectedSeat(null);
+
             }
         };
     }
@@ -187,7 +192,7 @@ const breakSeat = async (
     setTimer: Function
 ) => {
     setTimedWaitSeats([...timedWaitSeats, index]);
-    setTimer({ ...timer, [index]: 120 }); // 2 minutes = 120 seconds
+    setTimer({ ...timer, [index]: 30 });
 
     ws.send("break " + index);
     ws.onmessage = (e) => {
