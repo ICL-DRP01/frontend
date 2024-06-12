@@ -154,7 +154,7 @@ const Reserve = ({ route, expoPushToken }) => {
           }
           if (newTimers[selectedSeat] === 20) {
             flagSeat(ws ,selectedSeat, flaggedSeats, setFlaggedSeats, setOccupiedSeats, setTimedWaitSeats);
-            leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat);
+            // leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat);
 
           }
         }
@@ -171,7 +171,7 @@ const Reserve = ({ route, expoPushToken }) => {
         "Options",
         "Do you want to claim this seat?",
         [
-          { text: "Claim", onPress: () => claimSeat(ws , index, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+          { text: "Claim", onPress: () => claimSeat(ws , index, occupiedSeats, timedWaitSeats, flaggedSeats,setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)},
           { text: "Cancel", style: "cancel" }
         ]
       );
@@ -182,6 +182,7 @@ const Reserve = ({ route, expoPushToken }) => {
 
   const hasSeat = () => selectedSeat !== null;
   const awayFromDesk = () => hasSeat() && timedWaitSeats.includes(selectedSeat);
+  const isFlagged = () => selectedSeat !== null && flaggedSeats.includes(selectedSeat);
 
   const navToCamera = () => {
     console.log("Loading camera");
@@ -189,9 +190,11 @@ const Reserve = ({ route, expoPushToken }) => {
       ws : ws,
       occupiedSeats : occupiedSeats,
       timedWaitSeats : timedWaitSeats,
+      flaggedSeats : flaggedSeats,
       setOccupiedSeats : setOccupiedSeats,
       setSelectedSeat : setSelectedSeat,
       setTimedWaitSeats : setTimedWaitSeats,
+      setFlaggedSeats : setFlaggedSeats
     });
   };
 
@@ -216,13 +219,29 @@ const Reserve = ({ route, expoPushToken }) => {
   const drawLeaveButton = () => (
     <Button
       label="Leave your seat"
-      press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat) }
+      press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, flaggedSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats) }
     />
   );
 
+  const drawCollectButton = () => (
+
+        <>
+        <Text style={styles.selectedSeatText}>Your seat is Flagged!</Text>
+        <Button label={"continue"} press={() => claimSeat(ws , selectedSeat, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)} />
+        <Button
+              label="Leave your seat"
+              press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, flaggedSeats,  occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats) }
+            />
+        <Button label={"Collect belongings"} press={() => null} />
+        </>
+
+  )
+
+
+
   const drawBreakButton = () => (
     awayFromDesk()
-      ? <Button label={"Return from break"} press={() => claimSeat(ws , selectedSeat, occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)} />
+      ? <Button label={"Return from break"} press={() => claimSeat(ws , selectedSeat, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)} />
       : <Button label={"Take a break"} press={() => breakSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)} />
   )
 
@@ -246,14 +265,23 @@ const Reserve = ({ route, expoPushToken }) => {
   </>);
 
   const drawFooter = () => (
-    hasSeat()
-      ? <View>
+    hasSeat() ? (
+      isFlagged() ? (
+        <View>
+          {drawCollectButton()}
+        </View>
+      ) : (
+        <View>
           {drawTimer()}
           {drawLeaveButton()}
           {drawBreakButton()}
         </View>
-      : <QRButton press={() => navToCamera()} />
+      )
+    ) : (
+      <QRButton press={() => navToCamera()} />
+    )
   );
+
 
   return (
     <View style={styles.container}>

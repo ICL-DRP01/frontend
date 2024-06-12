@@ -9,8 +9,8 @@ import { NUM_ROWS, SEATS_PER_ROW } from './Constants';
 export default function Scanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const {ws , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats} = route.params;
-  console.log(occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)
+  const {ws , occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats} = route.params;
+  console.log(occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)
 
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function Scanner({ route, navigation }) {
 
   const press = (ws , index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
     console.log(ws);
-    claimSeat(ws , index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats);
+    claimSeat(ws , index , occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
     navigation.navigate("Seat Finder")
   }
 

@@ -78,9 +78,11 @@ const claimSeat = async (
     index: number,
     occupiedSeats: number[],
     timedWaitSeats: number[],
+    flaggedSeats : number[],
     setOccupiedSeats: Function,
     setSelectedSeat: Function,
-    setTimedWaitSeats: Function
+    setTimedWaitSeats: Function,
+    setFlaggedSeats : Function
 ) => {
     if (occupiedSeats.includes(index)) {
     // not sure
@@ -90,7 +92,10 @@ const claimSeat = async (
 //             console.error(error);
 //             Alert.alert('Error', 'An error occurred while unbreaking the seat.');
 //         }
-        ws.send("unbreak " + index);
+        if (timedWaitSeats.includes(index))
+          ws.send("unbreak " + index);
+        if (flaggedSeats.includes(index))
+          ws.send("unflag " + index);
         ws.onmessage = (e) => {
            console.log(e.data);
             if (e.data.startsWith("error")) {
@@ -99,6 +104,7 @@ const claimSeat = async (
             } else {
                 const result = parseMessage(e.data);
                 setTimedWaitSeats(result.break);
+                setFlaggedSeats(result.flagged)
                 setSelectedSeat(index)
             }
 
@@ -130,10 +136,12 @@ const leaveSeat = async (
     ws : WebSocket,
     index: number,
     timedWaitSeats: number[],
+    flaggedSeats : number[],
     setTimedWaitSeats: Function,
     occupiedSeats: number[],
     setOccupiedSeats: Function,
-    setSelectedSeat: Function
+    setSelectedSeat: Function,
+    setFlaggedSeats : Function
 ) => {
 
 
@@ -141,6 +149,14 @@ const leaveSeat = async (
         ws.send("unbreak " + index);
         setTimedWaitSeats(timedWaitSeats.filter(seat => seat !== index));
     }
+
+    if (flaggedSeats.includes(index)) {
+        ws.send("unflag " + index);
+        setFlaggedSeats(flaggedSeats.filter(seat => seat !== index))
+
+    }
+
+
 
     if (occupiedSeats.includes(index)) {
         ws.send("unbook " + index);
@@ -153,6 +169,8 @@ const leaveSeat = async (
             } else {
                 const result = parseMessage(e.data);
                 setOccupiedSeats(result.booked);
+                setFlaggedSeats(result.flagged);
+                setTimedWaitSeats(result.break);
                 console.log("unsetting seat!")
                 setSelectedSeat(null);
             }
