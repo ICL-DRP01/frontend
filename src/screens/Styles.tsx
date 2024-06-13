@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { scale,  moderateScale } from 'react-native-size-matters';
-import { PRIMARY_COLOUR, SECONDARY_COLOUR } from './Constants.ts';
+import { scale, moderateScale } from 'react-native-size-matters';
+import { PRIMARY_COLOUR, SECONDARY_COLOUR, GREY_COLOUR } from './Constants.ts';
 
 const styles = StyleSheet.create({
   container: {
@@ -10,24 +10,25 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 20,
-//     backgroundColor: 'red',
+    //     backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center'
   },
   map: {
     flex: 50,
-//     backgroundColor: 'darkorange',
+    //     backgroundColor: 'darkorange',
     alignItems: 'center',
     justifyContent: 'center'
   },
   list: {
-    borderWidth: 3,
+    borderWidth: 1,
     flexDirection: 'column',
     alignItems: 'center',
+    borderColor: GREY_COLOUR,
   },
   footer: {
     flex: 30,
-//     backgroundColor: 'green',
+    //     backgroundColor: 'green',
     alignItems: 'center',
     justifyContent: 'center'
   },

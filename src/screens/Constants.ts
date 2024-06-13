@@ -1,6 +1,7 @@
 
 export const PRIMARY_COLOUR = '#173d70';
 export const SECONDARY_COLOUR = '#7aaaff';
+export const GREY_COLOUR = '#909090';
 
 export const DURATION = 1000; // minutes for now
 
