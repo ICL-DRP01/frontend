@@ -229,6 +229,7 @@ export default function Reserve  ({ route, navigation }) {
 
   const drawSeat = ( index ) => (
     <Seat
+      isLibrarian = {false}
       index={index}
       selectedSeat={selectedSeat}
       timedWaitSeats={timedWaitSeats}

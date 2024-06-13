@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, FlatList, } from 'react-native';
+import { Text, View, FlatList, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import styles from '../Styles'
@@ -8,8 +8,7 @@ import Button from '../Button'
 import { NUM_ROWS, SEATS_PER_ROW, OCCUPIED_API, BREAK_SEATS, PRIMARY_COLOUR, FLAGGED_SEATS } from '../Constants';
 import { unflagSeat } from '../SeatManagement';
 
-const LibrarianMap = ({ route }) => {
-  const { seat } = route.params;
+const LibrarianMap = () => {
 
   // new web socket - get warning if passed and
   var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
@@ -50,48 +49,44 @@ const LibrarianMap = ({ route }) => {
   // API call to fetch occupiedSeats
   useEffect(() => {
     const fetchBreakSeats = async () => {
-         ws.onmessage = (e) => {
-           console.log(e.data);
+       ws.onmessage = (e) => {
+         console.log(e.data);
 
-           const result = parseMessage(e.data);
+         const result = parseMessage(e.data);
 
-           setFlaggedSeats(result.flagged);
-           console.log(result.flagged);
+         // Update the state
+         setFlaggedSeats(result.flagged);
 
-         };
-
-         // doesn't the librarian only care about flagged seats??
-         // do we need to show seats on break as well??
-//       try {
-//         const response = await fetch(OCCUPIED_API);
-//         if (!response.ok) {
-//           throw new Error('Failed to fetch occupied seats');
-//         }
-//         const data = await response.json(); // what we get form the API
-//         const occupied = data.results.map(item => parseInt(item.seat_number));
-//         console.log(occupied);
-//         setOccupiedSeats(occupied);
-//         const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
-//         setTimedWaitSeats(breakSeats);
-//       } catch (err) {
-//         console.log(err);
-//       }
+       };
     };
     fetchBreakSeats();
   }, []);
 
+  const handlePress = (index) => {
+    if (flaggedSeats.includes(index)) {
+        console.log("it is a flagged seat")
+        Alert.alert(
+          "Options",
+          "Do you want to clear this seat?",
+          [
+            { text: "Clear", onPress: () => unflagSeat(ws, index, flaggedSeats, setFlaggedSeats)},
+            { text: "Cancel", style: "cancel" }
+          ]
+        );
+    }
+  };
 
-  
   // Start of JSX code
 
   const drawSeat = (index) => (
     <Seat
+      isLibrarian={true}
       index={index}
-      selectedSeat={seat}
+      selectedSeat={index}
       timedWaitSeats={[]}
       occupiedSeats={flaggedSeats}
       flaggedSeats={[]}
-      handlePress={() => null}
+      handlePress={() => handlePress(index) }
     />
   );
 
@@ -105,11 +100,11 @@ const LibrarianMap = ({ route }) => {
   // Top-Level JSX
 
   const drawHeader = () => (
-    <Text style={styles.title}>Clear seat {seat}</Text>
+    <Text style={styles.title}>Clear seat </Text>
   );
 
   const drawMap = () => (<>
-    {drawKey()}
+
     <FlatList
       data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
       renderItem={({ index }) => drawSeat(index)}
@@ -119,10 +114,8 @@ const LibrarianMap = ({ route }) => {
   </>);
 
   const drawFooter = () => (
-    <View>
-      <Button label="Seat cleared" press={() => unflagSeat(ws, seat, flaggedSeats, setFlaggedSeats)} />
-      <Button label="Ignore flag" press={() => null} />
-    </View>
+      <></>
+
   );
 
   return (

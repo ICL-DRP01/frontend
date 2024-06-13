@@ -18,7 +18,7 @@ const Selector = ({ expoPushToken }) => {
     <View style={{ justifyContent: 'center', flex: 1 }}>
       {makeButton("Student View", () => navigation.navigate("Seat Finder", { expoPushToken }))}
       <View style={{ height: 50 }} />
-      {makeButton("Librarian View", () => navigation.navigate("Flagged Seats List"))}
+      {makeButton("Librarian View", () => navigation.navigate("Librarian Map"))}
     </View>
   );
 };
