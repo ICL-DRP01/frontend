@@ -16,11 +16,7 @@ const Seat = ({ isLibrarian, index, selectedSeat, timedWaitSeats, occupiedSeats,
 //                       (!occupied && selectedSeat !== index); // comment out this line to enable buttons
   const isFlagged = flaggedSeats.includes(index);
   const isSelected = selectedSeat === index;
-//
-//   if (isLibrarian) {
-//     console.log("is libarian")
-//
-//   }
+
 
   const textStyle = () => {
     if (occupied || isInTimedWait) 

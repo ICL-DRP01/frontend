@@ -104,7 +104,7 @@ const LibrarianMap = () => {
   );
 
   const drawMap = () => (<>
-
+    {drawKey()}
     <FlatList
       data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
       renderItem={({ index }) => drawSeat(index)}
