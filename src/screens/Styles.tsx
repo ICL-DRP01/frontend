@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     borderColor: GREY_COLOUR,
   },
   footer: {
-    flex: 30,
+    flex: 29,
     //     backgroundColor: 'green',
     alignItems: 'center',
     justifyContent: 'center'

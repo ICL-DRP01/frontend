@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, FlatList, Alert} from 'react-native';
+import { Text, View, FlatList, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import styles from '../Styles'
 import Seat from '../Seat'
-import Button from '../Button'
-import { NUM_ROWS, SEATS_PER_ROW, OCCUPIED_API, BREAK_SEATS, PRIMARY_COLOUR, FLAGGED_SEATS } from '../Constants';
+import { NUM_ROWS, SEATS_PER_ROW, PRIMARY_COLOUR, } from '../Constants';
 import { unflagSeat } from '../SeatManagement';
 
 const LibrarianMap = () => {
@@ -20,59 +19,59 @@ const LibrarianMap = () => {
 
   // duplicate - remove when refactoring
   const parseMessage = (message) => {
-        const result = {
-          booked: [],
-          flagged: [],
-          break: []
-        };
+    const result = {
+      booked: [],
+      flagged: [],
+      break: []
+    };
 
-        const bookedMatch = message.match(/booked: \{([^\}]*)\}/);
-        const flaggedMatch = message.match(/flagged: \{([^\}]*)\}/);
-        const breakMatch = message.match(/break: \{([^\}]*)\}/);
+    const bookedMatch = message.match(/booked: \{([^\}]*)\}/);
+    const flaggedMatch = message.match(/flagged: \{([^\}]*)\}/);
+    const breakMatch = message.match(/break: \{([^\}]*)\}/);
 
-        if (bookedMatch && bookedMatch[1]) {
-          result.booked = bookedMatch[1].split(', ').map(Number);
-        }
+    if (bookedMatch && bookedMatch[1]) {
+      result.booked = bookedMatch[1].split(', ').map(Number);
+    }
 
-        if (flaggedMatch && flaggedMatch[1]) {
-          result.flagged = flaggedMatch[1].split(', ').map(Number);
-        }
+    if (flaggedMatch && flaggedMatch[1]) {
+      result.flagged = flaggedMatch[1].split(', ').map(Number);
+    }
 
-        if (breakMatch && breakMatch[1]) {
-          result.break = breakMatch[1].split(', ').map(Number);
-        }
+    if (breakMatch && breakMatch[1]) {
+      result.break = breakMatch[1].split(', ').map(Number);
+    }
 
-        return result;
-      };
+    return result;
+  };
 
 
   // API call to fetch occupiedSeats
   useEffect(() => {
     const fetchBreakSeats = async () => {
-       ws.onmessage = (e) => {
-         console.log(e.data);
+      ws.onmessage = (e) => {
+        console.log(e.data);
 
-         const result = parseMessage(e.data);
+        const result = parseMessage(e.data);
 
-         // Update the state
-         setFlaggedSeats(result.flagged);
+        // Update the state
+        setFlaggedSeats(result.flagged);
 
-       };
+      };
     };
     fetchBreakSeats();
   }, []);
 
   const handlePress = (index) => {
     if (flaggedSeats.includes(index)) {
-        console.log("it is a flagged seat")
-        Alert.alert(
-          "Options",
-          "Do you want to clear this seat #" + index + "?",
-          [
-            { text: "Clear", onPress: () => unflagSeat(ws, index, flaggedSeats, setFlaggedSeats)},
-            { text: "Cancel", style: "cancel" }
-          ]
-        );
+      console.log("it is a flagged seat")
+      Alert.alert(
+        `Clearing seat #${index}`,
+        `Are you sure you want to clear seat #${index}?`,
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Yes", onPress: () => unflagSeat(ws, index, flaggedSeats, setFlaggedSeats) }
+        ]
+      );
     }
   };
 
@@ -86,7 +85,7 @@ const LibrarianMap = () => {
       timedWaitSeats={[]}
       occupiedSeats={flaggedSeats}
       flaggedSeats={[]}
-      handlePress={() => handlePress(index) }
+      handlePress={() => handlePress(index)}
     />
   );
 
@@ -100,7 +99,9 @@ const LibrarianMap = () => {
   // Top-Level JSX
 
   const drawHeader = () => (
-    <Text style={styles.title}>Clear seat </Text>
+    <Text style={[styles.title, { textAlign: 'center' }]}>
+      Press seats{'\n'} once cleared
+    </Text >
   );
 
   const drawMap = () => (<>
@@ -114,8 +115,11 @@ const LibrarianMap = () => {
   </>);
 
   const drawFooter = () => (
-      <></>
-
+    <Text style={extraStyles.guide}>
+      1. Go to any flagged seat{'\n'}
+      2. Take belongings to lost property{'\n'}
+      3. Press the seat to remove its flag
+    </Text>
   );
 
   return (
@@ -127,5 +131,13 @@ const LibrarianMap = () => {
   );
 };
 
+const extraStyles = StyleSheet.create({
+  guide: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    width: '70%',
+  }
+});
 
 export default LibrarianMap;

@@ -1,7 +1,7 @@
-import React, { useState , useEffect, useRef} from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert} from 'react-native';
-import { Ionicons,  MaterialIcons } from '@expo/vector-icons';
-import {useNavigation} from '@react-navigation/native';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 
 import styles from './Styles'
@@ -38,12 +38,12 @@ async function sendPushNotification(expoPushToken: string, seatNumber: number, t
 }
 
 
-export default function Reserve  ({ route, navigation }) {
+export default function Reserve({ route, navigation }) {
 
 
 
-  const { expoPushToken} = route.params;
-//   console.log(expoPushToken);
+  const { expoPushToken } = route.params;
+  //   console.log(expoPushToken);
 
 
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
@@ -59,7 +59,7 @@ export default function Reserve  ({ route, navigation }) {
   const [timer, setTimer] = useState<{ [key: number]: number }>({}); // Timer state for seats
 
   // navigation
-//   const navigation = useNavigation();
+  //   const navigation = useNavigation();
 
   // websocket - duplicated - need to remove duplication
   var ws = useRef(new WebSocket('wss://libraryseat-62c310e5e91e.herokuapp.com')).current;
@@ -92,57 +92,57 @@ export default function Reserve  ({ route, navigation }) {
 
     }
     connectWebSocket();
-    }, []
+  }, []
   )
 
   // duplicate - should remove when refactoring
   const parseMessage = (message) => {
-      const result = {
-        booked: [],
-        flagged: [],
-        break: []
-      };
-
-      const bookedMatch = message.match(/booked: \{([^\}]*)\}/);
-      const flaggedMatch = message.match(/flagged: \{([^\}]*)\}/);
-      const breakMatch = message.match(/break: \{([^\}]*)\}/);
-
-      if (bookedMatch && bookedMatch[1]) {
-        result.booked = bookedMatch[1].split(', ').map(Number);
-      }
-
-      if (flaggedMatch && flaggedMatch[1]) {
-        result.flagged = flaggedMatch[1].split(', ').map(Number);
-      }
-
-      if (breakMatch && breakMatch[1]) {
-        result.break = breakMatch[1].split(', ').map(Number);
-      }
-
-      return result;
+    const result = {
+      booked: [],
+      flagged: [],
+      break: []
     };
+
+    const bookedMatch = message.match(/booked: \{([^\}]*)\}/);
+    const flaggedMatch = message.match(/flagged: \{([^\}]*)\}/);
+    const breakMatch = message.match(/break: \{([^\}]*)\}/);
+
+    if (bookedMatch && bookedMatch[1]) {
+      result.booked = bookedMatch[1].split(', ').map(Number);
+    }
+
+    if (flaggedMatch && flaggedMatch[1]) {
+      result.flagged = flaggedMatch[1].split(', ').map(Number);
+    }
+
+    if (breakMatch && breakMatch[1]) {
+      result.break = breakMatch[1].split(', ').map(Number);
+    }
+
+    return result;
+  };
 
 
   // API call to fetch occupiedSeats
-//   useEffect(() => {
-//     const fetchOccupiedSeats = async () => {
-//       try {
-//         const response = await fetch(OCCUPIED_API);
-//         if (!response.ok) {
-//           throw new Error('Failed to fetch occupied seats');
-//         }
-//         const data = await response.json(); // what we get form the API
-//         const occupied = data.results.map(item => parseInt(item.seat_number));
-//         console.log(occupied);
-//         setOccupiedSeats(occupied);
-//         const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
-//         setTimedWaitSeats(breakSeats);
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     };
-//     fetchOccupiedSeats();
-//   }, []);
+  //   useEffect(() => {
+  //     const fetchOccupiedSeats = async () => {
+  //       try {
+  //         const response = await fetch(OCCUPIED_API);
+  //         if (!response.ok) {
+  //           throw new Error('Failed to fetch occupied seats');
+  //         }
+  //         const data = await response.json(); // what we get form the API
+  //         const occupied = data.results.map(item => parseInt(item.seat_number));
+  //         console.log(occupied);
+  //         setOccupiedSeats(occupied);
+  //         const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
+  //         setTimedWaitSeats(breakSeats);
+  //       } catch (err) {
+  //         console.log(err);
+  //       }
+  //     };
+  //     fetchOccupiedSeats();
+  //   }, []);
 
   // timer implementation
   useEffect(() => {
@@ -157,7 +157,7 @@ export default function Reserve  ({ route, navigation }) {
             sendPushNotification(expoPushToken, selectedSeat, newTimers[selectedSeat]);
           }
           if (newTimers[selectedSeat] === 20) {
-            flagSeat(ws ,selectedSeat, flaggedSeats, setFlaggedSeats, setOccupiedSeats, setTimedWaitSeats);
+            flagSeat(ws, selectedSeat, flaggedSeats, setFlaggedSeats, setOccupiedSeats, setTimedWaitSeats);
             // leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat);
 
           }
@@ -172,11 +172,11 @@ export default function Reserve  ({ route, navigation }) {
   const handlePress = (index: number) => {
     if (selectedSeat === null) {
       Alert.alert(
-        "Options",
-        "Do you want to claim this seat?",
+        `Claiming seat #${index}`,
+        `Do you want to claim seat #${index}?`,
         [
-          { text: "Claim", onPress: () => claimSeat(ws , index, occupiedSeats, timedWaitSeats, flaggedSeats,setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)},
-          { text: "Cancel", style: "cancel" }
+          { text: "Cancel", style: "cancel" },
+          { text: "Yes", onPress: () => claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats) }
         ]
       );
     }
@@ -187,49 +187,49 @@ export default function Reserve  ({ route, navigation }) {
   const hasSeat = () => selectedSeat !== null || occupiedSeats.includes(selectedSeat);
   const awayFromDesk = () => hasSeat() && timedWaitSeats.includes(selectedSeat);
   const isFlagged = () => selectedSeat !== null && flaggedSeats.includes(selectedSeat);
-  const isNowhere =  !occupiedSeats.includes(selectedSeat) && !flaggedSeats.includes(selectedSeat) && !timedWaitSeats.includes(selectedSeat);
+  const isNowhere = !occupiedSeats.includes(selectedSeat) && !flaggedSeats.includes(selectedSeat) && !timedWaitSeats.includes(selectedSeat);
   const collectBelongings = selectedSeat !== null && isNowhere
 
   useEffect(() => {
-//       console.log("clean up")
-//       console.log(selectedSeat);
+    //       console.log("clean up")
+    //       console.log(selectedSeat);
 
-      ws.onmessage = (e) => {
-//         console.log(e.data);
+    ws.onmessage = (e) => {
+      //         console.log(e.data);
 
-        const result = parseMessage(e.data);
+      const result = parseMessage(e.data);
 
-        setOccupiedSeats(result.booked);
-        setFlaggedSeats(result.flagged);
-        setTimedWaitSeats(result.break);
+      setOccupiedSeats(result.booked);
+      setFlaggedSeats(result.flagged);
+      setTimedWaitSeats(result.break);
 
-      };
+    };
 
-//       if (selectedSeat !== null && isNowhere) {
-//         console.log("belongings collected")
-//
-//
-//       }
+    //       if (selectedSeat !== null && isNowhere) {
+    //         console.log("belongings collected")
+    //
+    //
+    //       }
 
-   });
+  });
 
   const navToCamera = () => {
     console.log("Loading camera");
     navigation.navigate("Scanner", {
-      ws : ws,
-      occupiedSeats : occupiedSeats,
-      timedWaitSeats : timedWaitSeats,
-      flaggedSeats : flaggedSeats,
-      setOccupiedSeats : setOccupiedSeats,
-      setSelectedSeat : setSelectedSeat,
-      setTimedWaitSeats : setTimedWaitSeats,
-      setFlaggedSeats : setFlaggedSeats
+      ws: ws,
+      occupiedSeats: occupiedSeats,
+      timedWaitSeats: timedWaitSeats,
+      flaggedSeats: flaggedSeats,
+      setOccupiedSeats: setOccupiedSeats,
+      setSelectedSeat: setSelectedSeat,
+      setTimedWaitSeats: setTimedWaitSeats,
+      setFlaggedSeats: setFlaggedSeats
     });
   };
 
-  const drawSeat = ( index ) => (
+  const drawSeat = (index) => (
     <Seat
-      isLibrarian = {false}
+      isLibrarian={false}
       index={index}
       selectedSeat={selectedSeat}
       timedWaitSeats={timedWaitSeats}
@@ -249,37 +249,30 @@ export default function Reserve  ({ route, navigation }) {
   const drawLeaveButton = () => (
     <Button
       label="Leave your seat"
-      press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, flaggedSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats) }
+      press={() => leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, flaggedSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats)}
     />
   );
 
   const drawResumeButton = () => (
-
-        <>
-        <Text style={styles.selectedSeatText}>Your seat is Flagged!</Text>
-        <Button label={"continue"} press={() => claimSeat(ws , selectedSeat, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)} />
-        <Button
-              label="Leave your seat"
-              press={ () => leaveSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, flaggedSeats,  occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats) }
-            />
-
-        </>
-
+    <>
+      <Text style={styles.selectedSeatText}>Your seat is Flagged!</Text>
+      <Button
+        label="Leave your seat"
+        press={() => leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, flaggedSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat, setFlaggedSeats)}
+      />
+      <Button label={"Return to seat"} press={() => claimSeat(ws, selectedSeat, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)} />
+    </>
   )
-
-
 
   const drawBreakButton = () => (
     awayFromDesk()
-      ? <Button label={"Return from break"} press={() => claimSeat(ws , selectedSeat, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)} />
-      : <Button label={"Take a break"} press={() => breakSeat(ws ,selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)} />
+      ? <Button label={"Return from break"} press={() => claimSeat(ws, selectedSeat, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)} />
+      : <Button label={"Take a break"} press={() => breakSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, timer, setTimer)} />
   )
 
   const drawCollectedButton = () => (
-
-        <Button label={"collected belongings"} press={() =>  setSelectedSeat(null)} />
-
-    )
+    <Button label={"Belongings collected"} press={() => setSelectedSeat(null)} />
+  )
 
   // Top-Level JSX
 
