@@ -20,7 +20,8 @@
         "backgroundColor": "#0000cd"
       },
       "googleServicesFile": "./google-services.json",
-      "package": "com.vp722.app"
+      "package": "com.vp722.app",
+      "permissions": ["INTERNET"]
     },
     "web": {
       "favicon": "./assets/favicon.png"

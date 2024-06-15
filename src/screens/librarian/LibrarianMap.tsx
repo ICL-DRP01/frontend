@@ -11,7 +11,7 @@ import { unflagSeat } from '../SeatManagement';
 const LibrarianMap = () => {
 
   // new web socket - get warning if passed and
-  var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
+  var ws = useRef(new WebSocket('wss://libraryseat-62c310e5e91e.herokuapp.com')).current;
 
 
   const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);

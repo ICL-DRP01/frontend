@@ -62,7 +62,7 @@ export default function Reserve  ({ route, navigation }) {
 //   const navigation = useNavigation();
 
   // websocket - duplicated - need to remove duplication
-  var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
+  var ws = useRef(new WebSocket('wss://libraryseat-62c310e5e91e.herokuapp.com')).current;
 
 
   useEffect(() => {

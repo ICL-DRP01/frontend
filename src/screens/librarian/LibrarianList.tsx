@@ -15,7 +15,7 @@ export default function LibrarianList() {
   const navigation = useNavigation();
 
   // duplicated need to fix
-  var ws = useRef(new WebSocket('ws://libraryseat-62c310e5e91e.herokuapp.com')).current;
+  var ws = useRef(new WebSocket('wss://libraryseat-62c310e5e91e.herokuapp.com')).current;
 
 
   useEffect(() => {
