@@ -67,7 +67,7 @@ const LibrarianMap = () => {
         console.log("it is a flagged seat")
         Alert.alert(
           "Options",
-          "Do you want to clear this seat?",
+          "Do you want to clear this seat #" + index + "?",
           [
             { text: "Clear", onPress: () => unflagSeat(ws, index, flaggedSeats, setFlaggedSeats)},
             { text: "Cancel", style: "cancel" }
