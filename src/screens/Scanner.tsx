@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Button, Alert} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
@@ -9,7 +9,8 @@ import { NUM_ROWS, SEATS_PER_ROW } from './Constants';
 export default function Scanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const {ws , occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats} = route.params;
+  const {ws ,occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats} = route.params;
+  console.log("in camera")
   console.log(occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)
 
 
@@ -20,11 +21,11 @@ export default function Scanner({ route, navigation }) {
     })();
   }, []);
 
-  const press = (ws , index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
-    console.log(ws);
-    claimSeat(ws , index , occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
-    navigation.navigate("Seat Finder")
-  }
+//   const press = ( index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
+// //     console.log(ws);
+//     claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
+//     navigation.navigate("Seat Finder")
+//   }
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
@@ -59,7 +60,8 @@ export default function Scanner({ route, navigation }) {
       `Seat Number ${data} scanned`,
       "Do you want to claim this seat?",
       [
-        { text: "Claim", onPress: () => press(ws, index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats)},
+        { text: "Claim", onPress: () => {claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
+                                         navigation.navigate("Seat Finder")}},
         { text: "Try Again", onPress: () => setScanned(false)}
       ]
     );

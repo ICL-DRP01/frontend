@@ -40,12 +40,12 @@
   }
 
 
-  export default function Reserve({ route, navigation }) {
+  export default function Reserve({ expoPushToken }) {
 
 
 
-    const { expoPushToken } = route.params;
-    //   console.log(expoPushToken);
+//     const { expoPushToken } = route.params;
+    console.log("in reserve " + expoPushToken);
 
 
     const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]); // Track occupied seats
@@ -63,8 +63,8 @@
     const [isDialogVisible, setIsDialogVisible] = useState(false);
     const [index, setIndex] = useState<number | null>(null);
 
-    // navigation
-    //   const navigation = useNavigation();
+    navigation
+      const navigation = useNavigation();
 
     // websocket - duplicated - need to remove duplication
     var ws = useRef(new WebSocket('wss://libraryseat-62c310e5e91e.herokuapp.com')).current;
@@ -219,7 +219,7 @@
     const navToCamera = () => {
       console.log("Loading camera");
       navigation.navigate("Scanner", {
-        ws: ws,
+        ws : ws,
         occupiedSeats: occupiedSeats,
         timedWaitSeats: timedWaitSeats,
         flaggedSeats: flaggedSeats,
