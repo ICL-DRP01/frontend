@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, FlatList, Alert, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
+
+import Dialog from 'react-native-dialog';
 
 import styles from '../Styles'
 import Seat from '../Seat'
@@ -14,6 +17,9 @@ const LibrarianMap = () => {
 
 
   const [flaggedSeats, setFlaggedSeats] = useState<number[]>([]);
+
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [selectedSeatIndex, setSelectedSeatIndex] = useState<number | null>(null);
 
   const navigation = useNavigation();
 
@@ -63,19 +69,38 @@ const LibrarianMap = () => {
 
   const handlePress = (index) => {
     if (flaggedSeats.includes(index)) {
-      console.log("it is a flagged seat")
-      Alert.alert(
-        `Clearing seat #${index}`,
-        `Are you sure you want to clear seat #${index}?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          { text: "Yes", onPress: () => unflagSeat(ws, index, flaggedSeats, setFlaggedSeats) }
-        ]
-      );
+      setSelectedSeatIndex(index);
+      setIsDialogVisible(true);
     }
   };
 
   // Start of JSX code
+
+  const renderDialog = () => (
+      <Dialog.Container visible={isDialogVisible}>
+        <Dialog.Title>Clearing Seat #{selectedSeatIndex}</Dialog.Title>
+        <Dialog.Description>
+          Do you want to clear seat #{selectedSeatIndex}?
+        </Dialog.Description>
+        <View style={styles.dialogButtonContainer}>
+          <TouchableOpacity
+            style={[styles.dialogButton, styles.dialogButtonCancel]}
+            onPress={() => setIsDialogVisible(false)}
+          >
+            <Text style={styles.dialogButtonText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.dialogButton, styles.dialogButtonYes]}
+            onPress={() => {
+              unflagSeat(ws, selectedSeatIndex, flaggedSeats, setFlaggedSeats);
+              setIsDialogVisible(false);
+            }}
+          >
+            <Text style={styles.dialogButtonText}>Yes</Text>
+          </TouchableOpacity>
+        </View>
+      </Dialog.Container>
+    );
 
   const drawSeat = (index) => (
     <Seat
@@ -127,6 +152,7 @@ const LibrarianMap = () => {
       <View style={styles.header}>{drawHeader()}</View>
       <View style={styles.map}>{drawMap()}</View>
       <View style={styles.footer}>{drawFooter()}</View>
+      {renderDialog()}
     </View>
   );
 };

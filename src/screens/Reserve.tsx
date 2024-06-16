@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
+import Dialog from 'react-native-dialog';
 
 import styles from './Styles'
 import Seat from './Seat'
@@ -58,10 +59,12 @@ export default function Reserve({ route, navigation }) {
   // timer
   const [timer, setTimer] = useState<{ [key: number]: number }>({}); // Timer state for seats
 
-  // navigation
-  //   const navigation = useNavigation();
+  // popup
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [selectedSeatIndex, setSelectedSeatIndex] = useState<number | null>(null);
 
-  // websocket - duplicated - need to remove duplication
+
+  // websocket
   var ws = useRef(new WebSocket('wss://libraryseat-62c310e5e91e.herokuapp.com')).current;
 
 
@@ -122,28 +125,6 @@ export default function Reserve({ route, navigation }) {
     return result;
   };
 
-
-  // API call to fetch occupiedSeats
-  //   useEffect(() => {
-  //     const fetchOccupiedSeats = async () => {
-  //       try {
-  //         const response = await fetch(OCCUPIED_API);
-  //         if (!response.ok) {
-  //           throw new Error('Failed to fetch occupied seats');
-  //         }
-  //         const data = await response.json(); // what we get form the API
-  //         const occupied = data.results.map(item => parseInt(item.seat_number));
-  //         console.log(occupied);
-  //         setOccupiedSeats(occupied);
-  //         const breakSeats = data.results.filter(item => item.on_break).map(item => parseInt(item.seat_number));
-  //         setTimedWaitSeats(breakSeats);
-  //       } catch (err) {
-  //         console.log(err);
-  //       }
-  //     };
-  //     fetchOccupiedSeats();
-  //   }, []);
-
   // timer implementation
   useEffect(() => {
     if (selectedSeat === null) return;
@@ -169,18 +150,16 @@ export default function Reserve({ route, navigation }) {
     return () => clearInterval(interval);
   }, [selectedSeat, timer]);
 
+
+
   const handlePress = (index: number) => {
     if (selectedSeat === null) {
-      Alert.alert(
-        `Claiming seat #${index}`,
-        `Do you want to claim seat #${index}?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          { text: "Yes", onPress: () => claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats) }
-        ]
-      );
+      setSelectedSeatIndex(index);
+      setIsDialogVisible(true);
     }
   };
+
+
 
   // Start of JSX code
 
@@ -190,28 +169,31 @@ export default function Reserve({ route, navigation }) {
   const isNowhere = !occupiedSeats.includes(selectedSeat) && !flaggedSeats.includes(selectedSeat) && !timedWaitSeats.includes(selectedSeat);
   const collectBelongings = selectedSeat !== null && isNowhere
 
-  useEffect(() => {
-    //       console.log("clean up")
-    //       console.log(selectedSeat);
-
-    ws.onmessage = (e) => {
-      //         console.log(e.data);
-
-      const result = parseMessage(e.data);
-
-      setOccupiedSeats(result.booked);
-      setFlaggedSeats(result.flagged);
-      setTimedWaitSeats(result.break);
-
-    };
-
-    //       if (selectedSeat !== null && isNowhere) {
-    //         console.log("belongings collected")
-    //
-    //
-    //       }
-
-  });
+  const renderDialog = () => (
+    <Dialog.Container visible={isDialogVisible} Style={styles.dialogContainer}>
+      <Dialog.Title>Claiming seat #{selectedSeatIndex}</Dialog.Title>
+      <Dialog.Description>
+        Do you want to claim seat #{selectedSeatIndex}?
+      </Dialog.Description>
+      <View style={styles.dialogButtonContainer}>
+        <TouchableOpacity
+          style={[styles.dialogButton, styles.dialogButtonCancel]}
+          onPress={() => setIsDialogVisible(false)}
+        >
+          <Text style={styles.dialogButtonText}>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.dialogButton, styles.dialogButtonYes]}
+          onPress={() => {
+            claimSeat(ws, selectedSeatIndex, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
+            setIsDialogVisible(false);
+          }}
+        >
+          <Text style={styles.dialogButtonText}>Yes</Text>
+        </TouchableOpacity>
+      </View>
+    </Dialog.Container>
+  );
 
   const navToCamera = () => {
     console.log("Loading camera");
@@ -323,16 +305,17 @@ export default function Reserve({ route, navigation }) {
   };
 
 
-
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>{drawHeader()}</View>
       <View style={styles.map}>{drawMap()}</View>
       <View style={styles.footer}>{drawFooter()}</View>
+      {renderDialog()}
     </View>
   );
 };
+
+
 
 
 export default Reserve;

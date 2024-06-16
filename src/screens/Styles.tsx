@@ -92,6 +92,32 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
 
+  dialogButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 5,
+    marginBottom: 10,
+  },
+
+  dialogButton: {
+    flex: 1,
+    marginHorizontal: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  dialogButtonYes: {
+    backgroundColor: PRIMARY_COLOUR,
+  },
+  dialogButtonCancel: {
+    backgroundColor: SECONDARY_COLOUR,
+  },
+  dialogButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
 
 });
 
