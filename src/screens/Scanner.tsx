@@ -1,14 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Button, Alert} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Button, Alert, } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
+import Dialog from 'react-native-dialog';
 
 import { claimSeat } from './SeatManagement';
-import { NUM_ROWS, SEATS_PER_ROW } from './Constants';
+import { NUM_ROWS, SEATS_PER_ROW, PRIMARY_COLOUR, SECONDARY_COLOUR } from './Constants';
 
 export default function Scanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [seatData, setSeatData] = useState(null);
+
   const {ws ,occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats} = route.params;
   console.log("in camera")
   console.log(occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats)
@@ -21,12 +26,6 @@ export default function Scanner({ route, navigation }) {
     })();
   }, []);
 
-//   const press = ( index , occupiedSeats, timedWaitSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats) => {
-// //     console.log(ws);
-//     claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
-//     navigation.navigate("Seat Finder")
-//   }
-
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
 
@@ -38,34 +37,64 @@ export default function Scanner({ route, navigation }) {
     const invalid_ios_type = typeof type === "string" && type !== "org.iso.QRCode";
     const isClaimed = timedWaitSeats.includes(index) || occupiedSeats.includes(index);
     if (invalid_android_type || invalid_ios_type || invalid_value) {
-      Alert.alert(
-        'Invalid Code',
-        'Please scan a library seat QR code',
-        [ { text: 'Try Again', onPress: () => setScanned(false) } ]
-      );
+      setSeatData({ message: 'Invalid Code', description: 'Please scan a library seat QR code', tryAgain: true });
+      setIsDialogVisible(true);
       return;
     }
 
     if (isClaimed) {
-      Alert.alert(
-        'Already claimed',
-        'This seat is already claimed, choose another seat',
-        [ { text: 'Try Again', onPress: () => setScanned(false) } ]
-      );
+      setSeatData({ message: 'Already claimed', description: 'This seat is already claimed, choose another seat', tryAgain: true });
+      setIsDialogVisible(true);
       return;
     }
 
     // Successful QR scan
-    Alert.alert(
-      `Seat Number ${data} scanned`,
-      "Do you want to claim this seat?",
-      [
-        { text: "Claim", onPress: () => {claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
-                                         navigation.navigate("Seat Finder")}},
-        { text: "Try Again", onPress: () => setScanned(false)}
-      ]
-    );
+    setSeatData({ message: `Seat Number ${data} scanned`, description: 'Do you want to claim this seat?', index });
+    setIsDialogVisible(true);
   };
+
+
+  const renderDialog = () => (
+    <Dialog.Container visible={isDialogVisible}>
+      <Dialog.Title>{seatData?.message}</Dialog.Title>
+      <Dialog.Description>{seatData?.description}</Dialog.Description>
+      <View style={styles.dialogButtonContainer}>
+        {seatData?.tryAgain ? (
+          <TouchableOpacity
+            style={[styles.dialogButton, styles.dialogButtonYes]}
+            onPress={() => {navigation.navigate('Seat Finder')}}
+          >
+            <Text style={styles.dialogButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={[styles.dialogButton, styles.dialogButtonCancel]}
+              onPress={() => {navigation.navigate('Seat Finder')}}
+            >
+              <Text style={styles.dialogButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dialogButton, styles.dialogButtonYes]}
+              onPress={handleClaim}
+            >
+              <Text style={styles.dialogButtonText}>Claim</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+    </Dialog.Container>
+  );
+
+
+
+  const handleClaim = () => {
+    const { index } = seatData;
+    claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
+    setIsDialogVisible(false);
+    navigation.navigate('Seat Finder');
+  };
+
 
   const renderCamera = () => {
     return (
@@ -94,6 +123,7 @@ export default function Scanner({ route, navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Scan your seat number</Text>
       {renderCamera()}
+      {renderDialog()}
     </View>
   );
 }
@@ -135,4 +165,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  dialogButtonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginTop: 5,
+      marginBottom: 10,
+    },
+    dialogButton: {
+      flex: 1,
+      marginHorizontal: 10,
+      borderRadius: 5,
+      alignItems: 'center',
+      paddingVertical: 10,
+    },
+    dialogButtonYes: {
+      backgroundColor: PRIMARY_COLOUR,
+    },
+    dialogButtonCancel: {
+      backgroundColor: SECONDARY_COLOUR,
+    },
+    dialogButtonText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
 });
