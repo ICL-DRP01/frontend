@@ -89,6 +89,7 @@ const claimSeat = async (
     setFlaggedSeats : Function
 ) => {
     if (occupiedSeats.includes(index)) {
+      console.log("in claim seat!!")
     // not sure
 //         try {
 
@@ -118,19 +119,26 @@ const claimSeat = async (
         ; // Select the seat
         return;
     }
-    
+
+    console.log("in claim seat")
     ws.send("book " + index);
+    console.log("sent book")
     ws.onmessage = (e) => {
+      console.log("here")
+      console.log(e);
        console.log(e.data);
+
         if (e.data.startsWith("error")) {
           Alert.alert('Error', 'Failed to claim seat.');
           console.log("ERROR");
 
         } else {
+            setSelectedSeat(index);
             const result = parseMessage(e.data);
+            console.log(result);
             setOccupiedSeats(result.booked);
             console.log("setting seat!")
-            setSelectedSeat(index);
+
         }
 
     };
