@@ -25,8 +25,9 @@ async function sendPushNotification(expoPushToken: string, seatNumber: number, t
     to: expoPushToken,
     sound: 'default',
     title: seatNumber === null ? 'Get back to your seat!' : `Get back to seat ${seatNumber}!`,
-    body: `Your break finishes at ${finishTime.getHours() + ":" + finishTime.getMinutes()}`,
+    body: `Your break finishes at ${finishTime.getHours()}:${finishTime.getMinutes() < 10 ? '0' : ''}${finishTime.getMinutes()}`,
   };
+
 
   await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
