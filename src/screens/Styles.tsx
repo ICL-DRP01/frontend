@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
   selectedSeatText: {
     fontSize: moderateScale(25),
     fontWeight: 'bold',
+    textAlign: 'center'
   },
   freeSeatText: {
     fontWeight: 'bold',
