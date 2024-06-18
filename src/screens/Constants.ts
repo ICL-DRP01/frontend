@@ -9,7 +9,7 @@ export const NUM_ROWS = 6;
 export const SEATS_PER_ROW = 5;
 
 export const BREAK_SEATS = [0, 9, 29];
-export const COMPUTER_SEATS = [0, 1, 2, 3, 4];
+export const COMPUTER_SEATS = [];
 
 export const API_ENDPOINT = "https://libraryseat-62c310e5e91e.herokuapp.com/";
 export const OCCUPIED_API = API_ENDPOINT;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -197,12 +197,12 @@ export default function Reserve({ expoPushToken }) {
 //     const isNowhere = !occupiedSeats.includes(selectedSeat) && !flaggedSeats.includes(selectedSeat) && !timedWaitSeats.includes(selectedSeat);
 //     const collectBelongings = selectedSeat !== null && isNowhere
 
-const isNowhere = () => {
-  return !occupiedSeats.includes(selectedSeat) && !flaggedSeats.includes(selectedSeat) && !timedWaitSeats.includes(selectedSeat);
-};
+  const isNowhere = () => {
+    return !occupiedSeats.includes(selectedSeat) && !flaggedSeats.includes(selectedSeat) && !timedWaitSeats.includes(selectedSeat);
+  };
 
 
- useEffect(() => {
+  useEffect(() => {
    if (selectedSeat !== null && isNowhere) {
      ws.onmessage = (e) => {
        const result = parseMessage(e.data);
@@ -211,8 +211,7 @@ const isNowhere = () => {
        setTimedWaitSeats(result.break);
      };
    }
- }, [selectedSeat, isNowhere]);
-
+  }, [selectedSeat, isNowhere]);
 
 
   const navToCamera = () => {
@@ -312,15 +311,90 @@ const isNowhere = () => {
     </Text>
   </>);
 
-  const drawMap = () => (<>
-    {SeatInfo()}
-    <FlatList
-      data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
-      renderItem={({ index }) => drawSeat(index)}
-      keyExtractor={(item, index) => index.toString()}
-      numColumns={SEATS_PER_ROW}
-    />
-  </>);
+//   const drawMap = () => (<>
+//     {SeatInfo()}
+//     <FlatList
+//       data={Array(NUM_ROWS * SEATS_PER_ROW).fill(null)}
+//       renderItem={({ index }) => drawSeat(index)}
+//       keyExtractor={(item, index) => index.toString()}
+//       numColumns={SEATS_PER_ROW}
+//     />
+//   </>);
+
+  const drawMap = () => {
+    const numRows = 3; // Number of rows
+    const numCols = 2; // Number of columns per row
+    const seatsPerRow = 3; // Total seats per row
+
+    return (
+      <>
+        {SeatInfo()}
+        <View style={{ alignItems: 'center', marginTop: 5 }}>
+          <View style={{ position: 'relative', width: 100, height: 100, marginLeft: 100, marginTop: 20, marginBottom: 10}}>
+            {renderCircularSeats()}
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', marginTop: 50 }}>
+          {/* First FlatList */}
+          <View style={{ marginRight: 10 }}>
+            <FlatList
+              data={Array(numRows * seatsPerRow).fill(null)}
+              renderItem={({ index }) => drawSeat(index + 4)}
+              keyExtractor={(item, index) => index.toString()}
+              numColumns={seatsPerRow}
+            />
+          </View>
+
+          {/* Gap */}
+          <View style={{ width: 20 }} />
+
+          {/* Second FlatList */}
+          <View style={{ marginLeft: 10 }}>
+            <FlatList
+              data={Array(numRows * seatsPerRow).fill(null)}
+              renderItem={({ index }) => drawSeat(index + 13)}
+              keyExtractor={(item, index) => index.toString()}
+              numColumns={seatsPerRow}
+            />
+          </View>
+
+        </View>
+
+      </>
+    );
+  };
+
+  const renderCircularSeats = () => {
+    const numSeats = 4; // Number of seats around the circular table
+    const radius = 50; // Radius of the circular table
+    const centerX = 50; // X-coordinate of the center of the circular table
+    const centerY = 50; // Y-coordinate of the center of the circular table
+
+    const seats = [];
+
+    // Calculate positions around the circle
+    for (let i = 0; i < numSeats; i++) {
+      const angle = (i / numSeats) * 2 * Math.PI;
+      const seatX = centerX + radius * Math.cos(angle);
+      const seatY = centerY + radius * Math.sin(angle);
+
+      seats.push(
+        <View
+          key={i}
+          style={{
+            position: 'absolute',
+            left: seatX - 10,
+            top: seatY - 10,
+          }}
+        >
+          {drawSeat(i)}
+        </View>
+      );
+    }
+
+    return seats;
+  };
+
 
   const drawFooter = () => {
     if (hasSeat()) {
