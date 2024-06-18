@@ -8,9 +8,9 @@ import LibrarianMap from './src/screens/librarian/LibrarianMap';
 import LibrarianList from './src/screens/librarian/LibrarianList';
 
 // to not show deprecated warnings in the app - barcode - or update it - comment out when testing
-// import { LogBox } from 'react-native';
-//
-// LogBox.ignoreAllLogs(true);
+import { LogBox } from 'react-native';
+
+LogBox.ignoreAllLogs(true);
 
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform, Alert } from 'react-native';

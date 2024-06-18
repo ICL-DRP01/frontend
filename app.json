@@ -14,14 +14,15 @@
     "ios": {
       "supportsTablet": true
     },
+    "assetBundlePatterns": ["**/*"],
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0000cd"
       },
       "googleServicesFile": "./google-services.json",
-      "package": "com.vp722.app",
-      "permissions": ["INTERNET"]
+      "permissions": ["INTERNET", "CAMERA"],
+      "package": "com.vp722.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

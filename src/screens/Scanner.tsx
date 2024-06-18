@@ -64,7 +64,7 @@ export default function Scanner({ route, navigation }) {
             style={[styles.dialogButton, styles.dialogButtonYes]}
             onPress={() => {navigation.navigate('Seat Finder')}}
           >
-            <Text style={styles.dialogButtonText}>Try Again</Text>
+            <Text style={styles.dialogButtonTextCancle}>Try Again</Text>
           </TouchableOpacity>
         ) : (
           <>
@@ -72,13 +72,13 @@ export default function Scanner({ route, navigation }) {
               style={[styles.dialogButton, styles.dialogButtonCancel]}
               onPress={() => {navigation.navigate('Seat Finder')}}
             >
-              <Text style={styles.dialogButtonText}>Cancel</Text>
+              <Text style={styles.dialogButtonTextCancle}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.dialogButton, styles.dialogButtonYes]}
               onPress={handleClaim}
             >
-              <Text style={styles.dialogButtonText}>Claim</Text>
+              <Text style={styles.dialogButtonTextYes}>Claim</Text>
             </TouchableOpacity>
           </>
         )}
@@ -182,9 +182,18 @@ const styles = StyleSheet.create({
       backgroundColor: PRIMARY_COLOUR,
     },
     dialogButtonCancel: {
-      backgroundColor: SECONDARY_COLOUR,
+      backgroundColor: 'white',
+      borderColor: PRIMARY_COLOUR,
+      borderWidth: 1,
+
     },
-    dialogButtonText: {
+    dialogButtonTextCancle: {
+      color: PRIMARY_COLOUR,
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+
+    dialogButtonTextYes: {
       color: 'white',
       fontSize: 16,
       fontWeight: 'bold',

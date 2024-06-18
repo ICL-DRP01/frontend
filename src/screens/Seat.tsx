@@ -12,8 +12,8 @@ const Seat = ({ isLibrarian, index, selectedSeat, timedWaitSeats, occupiedSeats,
   const isInTimedWait = timedWaitSeats.includes(index);
   const isDisabled = (!isLibrarian && ((selectedSeat !== null && selectedSeat !== index) ||
                      (occupied && selectedSeat !== index) ||
-                     (isInTimedWait && selectedSeat !== index))) ||
-                     (!occupied && selectedSeat !== index); // comment out this line to enable buttons
+                     (isInTimedWait && selectedSeat !== index)))
+//                      (!occupied && selectedSeat !== index); // comment out this line to enable buttons
   const isFlagged = flaggedSeats.includes(index);
   const isSelected = selectedSeat === index;
 

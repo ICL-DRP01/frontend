@@ -110,14 +110,22 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_COLOUR,
   },
   dialogButtonCancel: {
-    backgroundColor: SECONDARY_COLOUR,
+    backgroundColor: 'white',
+    borderColor: PRIMARY_COLOUR,
+    borderWidth: 1,
+
   },
-  dialogButtonText: {
-    color: 'white',
+  dialogButtonTextCancle: {
+    color: PRIMARY_COLOUR,
     fontSize: 16,
     fontWeight: 'bold',
   },
 
+  dialogButtonTextYes: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 
 });
 

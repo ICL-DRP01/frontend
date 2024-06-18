@@ -253,7 +253,7 @@ const isNowhere = () => {
             style={[styles.dialogButton, styles.dialogButtonCancel]}
             onPress={() => setIsDialogVisible(false)}
           >
-            <Text style={styles.dialogButtonText}>Cancel</Text>
+            <Text style={styles.dialogButtonTextCancle}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.dialogButton, styles.dialogButtonYes]}
@@ -262,7 +262,7 @@ const isNowhere = () => {
               setIsDialogVisible(false);
             }}
           >
-            <Text style={styles.dialogButtonText}>Yes</Text>
+            <Text style={styles.dialogButtonTextYes}>Yes</Text>
           </TouchableOpacity>
         </View>
       </Dialog.Container>
