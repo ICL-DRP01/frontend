@@ -56,7 +56,7 @@ export default function Scanner({ route, navigation }) {
 
   const renderDialog = () => (
     <Dialog.Container visible={isDialogVisible}>
-      <Dialog.Title>{seatData?.message}</Dialog.Title>
+      <Dialog.Description style={styles.dialogTitle}>{seatData?.message}</Dialog.Description>
       <Dialog.Description>{seatData?.description}</Dialog.Description>
       <View style={styles.dialogButtonContainer}>
         {seatData?.tryAgain ? (
@@ -197,5 +197,10 @@ const styles = StyleSheet.create({
       color: 'white',
       fontSize: 16,
       fontWeight: 'bold',
+    },
+    dialogTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: 'black', // Ensure the text color is not blending with the background
     },
 });

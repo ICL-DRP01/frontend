@@ -126,6 +126,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  dialogTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black', // Ensure the text color is not blending with the background
+  },
 
 });
 

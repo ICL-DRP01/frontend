@@ -78,7 +78,7 @@ const LibrarianMap = () => {
 
   const renderDialog = () => (
       <Dialog.Container visible={isDialogVisible}>
-        <Dialog.Title>Clearing Seat #{selectedSeatIndex}</Dialog.Title>
+        <Dialog.Description style={styles.dialogTitle}>Clearing Seat #{selectedSeatIndex}</Dialog.Description>
         <Dialog.Description>
           Do you want to clear seat #{selectedSeatIndex}?
         </Dialog.Description>

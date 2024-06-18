@@ -244,7 +244,7 @@ const isNowhere = () => {
 
    const renderDialog = () => (
       <Dialog.Container visible={isDialogVisible}>
-        <Dialog.Title>Claiming seat #{index}</Dialog.Title>
+        <Dialog.Description style={styles.dialogTitle}>Claiming seat #{index}</Dialog.Description>
         <Dialog.Description>
           Do you want to claim seat #{index}?
         </Dialog.Description>

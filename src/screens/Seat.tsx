@@ -34,8 +34,6 @@ const Seat = ({ isLibrarian, index, selectedSeat, timedWaitSeats, occupiedSeats,
         isInTimedWait && styles.timedWaitSeat,
         selectedSeat !== null && !isSelected && !isLibrarian  && styles.disabledSeat,
 
-
-
       ]}
       onPress={() => !isDisabled && handlePress(index)}
               disabled={isDisabled}
