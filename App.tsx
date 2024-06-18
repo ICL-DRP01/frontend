@@ -111,15 +111,15 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Selector">
+        <Stack.Screen name="View">
           {props => <Selector {...props} expoPushToken={expoPushToken} />}
         </Stack.Screen>
-        <Stack.Screen name="Seat Finder">
+        <Stack.Screen name="LibraSeat Student">
           {props => <Reserve {...props} expoPushToken={expoPushToken} />}
         </Stack.Screen>
         <Stack.Screen name="Scanner" component={Scanner} />
         <Stack.Screen name="Flagged Seats List" component={LibrarianList} />
-        <Stack.Screen name="Librarian Map" component={LibrarianMap} />
+        <Stack.Screen name="LibraSeat Librarian" component={LibrarianMap} />
       </Stack.Navigator>
     </NavigationContainer>
   );

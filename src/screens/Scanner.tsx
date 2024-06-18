@@ -62,7 +62,7 @@ export default function Scanner({ route, navigation }) {
         {seatData?.tryAgain ? (
           <TouchableOpacity
             style={[styles.dialogButton, styles.dialogButtonYes]}
-            onPress={() => {navigation.navigate('Seat Finder')}}
+            onPress={() => {navigation.navigate('LibraSeat Student')}}
           >
             <Text style={styles.dialogButtonTextCancle}>Try Again</Text>
           </TouchableOpacity>
@@ -70,7 +70,7 @@ export default function Scanner({ route, navigation }) {
           <>
             <TouchableOpacity
               style={[styles.dialogButton, styles.dialogButtonCancel]}
-              onPress={() => {navigation.navigate('Seat Finder')}}
+              onPress={() => {navigation.navigate('LibraSeat Student')}}
             >
               <Text style={styles.dialogButtonTextCancle}>Cancel</Text>
             </TouchableOpacity>
@@ -92,7 +92,7 @@ export default function Scanner({ route, navigation }) {
     const { index } = seatData;
     claimSeat(ws, index, occupiedSeats, timedWaitSeats, flaggedSeats, setOccupiedSeats, setSelectedSeat, setTimedWaitSeats, setFlaggedSeats);
     setIsDialogVisible(false);
-    navigation.navigate('Seat Finder');
+    navigation.navigate('LibraSeat Student');
   };
 
 

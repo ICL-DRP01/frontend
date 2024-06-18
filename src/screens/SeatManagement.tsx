@@ -200,7 +200,7 @@ const breakSeat = async (
     setTimer: Function
 ) => {
     setTimedWaitSeats([...timedWaitSeats, index]);
-    setTimer({ ...timer, [index]: 30 });
+    setTimer({ ...timer, [index]: 10 });
 
     ws.send("break " + index);
     ws.onmessage = (e) => {
@@ -212,7 +212,7 @@ const breakSeat = async (
         } else {
             const result = parseMessage(e.data);
             setTimedWaitSeats([...timedWaitSeats, index]);
-            setTimer({ ...timer, [index]: 30 });
+            setTimer({ ...timer, [index]: 10 });
         }
 
 

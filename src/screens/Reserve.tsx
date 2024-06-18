@@ -157,10 +157,10 @@ export default function Reserve({ expoPushToken }) {
         if (newTimers[selectedSeat] > 0) {
           newTimers[selectedSeat] -= 1;
           // for testing - send notification 5 seconds in
-          if (newTimers[selectedSeat] === 25) {
+          if (newTimers[selectedSeat] === 5) {
             sendPushNotification(expoPushToken, selectedSeat, newTimers[selectedSeat]);
           }
-          if (newTimers[selectedSeat] === 20) {
+          if (newTimers[selectedSeat] === 0) {
             flagSeat(ws, selectedSeat, flaggedSeats, setFlaggedSeats, setOccupiedSeats, setTimedWaitSeats);
             // leaveSeat(ws, selectedSeat, timedWaitSeats, setTimedWaitSeats, occupiedSeats, setOccupiedSeats, setSelectedSeat);
 
